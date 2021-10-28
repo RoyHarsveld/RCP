@@ -1,0 +1,61 @@
+import _ from 'lodash';
+import "./styles.css";
+import {Text} from 'troika-three-text';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+
+let camera, scene, renderer, controls; //always needed
+let geometry, material, mesh;
+let title;
+
+init();
+
+function init() {
+
+  makeTitle();
+
+  /*Render setup*/
+  renderer = new THREE.WebGLRenderer( { antialias: true } );
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setAnimationLoop( animation );
+  document.body.appendChild( renderer.domElement );
+  
+  /*Camera setup*/
+  camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 2000 );
+  camera.position.z = 1010;
+  /*Scene setup*/
+  scene = new THREE.Scene();
+
+  /*geometry setup*/
+  geometry = new THREE.BoxGeometry( 1055, 165, 239);
+
+  /*material setup*/
+  material = new THREE.MeshNormalMaterial();
+
+  /*mesh setup*/
+  mesh = new THREE.Mesh( geometry, material );
+
+  /*add to the scene*/
+  scene.add( mesh , title);
+
+}
+
+function animation( time ) {
+
+    renderer.render( scene, camera );
+
+}
+
+function makeTitle() {
+  title = new Text()
+
+  // Set properties to configure:
+  title.text = 'Rail Configurator'
+  title.fontSize = 0.2
+  title.position.y = 1.4
+  title.position.x = -2.8
+  title.color = 0x4a5cd4
+  
+  // Update the rendering:
+  title.sync()
+}
