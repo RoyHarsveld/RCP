@@ -1,0 +1,43 @@
+{
+  "name": "Rail-Configurator",
+  "version": "1.0.0",
+  "description": "Rail Configurator",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack serve --mode=development",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "watch": "webpack --watch",
+    "serve": "webpack serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RoyHarsveld/RC.git"
+  },
+  "author": "Roy Harsveld",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RoyHarsveld/RC/issues"
+  },
+  "homepage": "https://github.com/RoyHarsveld/RC#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "three": "^0.133.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@webpack-cli/generators": "^2.4.1",
+    "babel-loader": "^8.2.3",
+    "css-loader": "^6.4.0",
+    "html-webpack-plugin": "^5.5.0",
+    "prettier": "^2.4.1",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.60.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.4.0",
+    "wepack-cli": "^0.0.1-security",
+    "workbox-webpack-plugin": "^6.3.0"
+  }
+}
