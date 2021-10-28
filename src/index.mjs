@@ -1,4 +1,5 @@
 import "./styles.css";
+import bootstrap from 'bootstrap'
 import _ from 'lodash';
 import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
@@ -21,13 +22,15 @@ function init() {
   scene.fog = new THREE.FogExp2( 0x212224, 0.0025 );  //Add some nice fog, default 0.00025
 
   /*    Render setup    */
-  renderer = new THREE.WebGLRenderer( { antialias: true } );    //The WebGL renderer displays the created scenes using WebGL (CONSTRUCTOR)
+  const canvas = document.getElementById('three');
+//   canvas.height = window.innerHeight;   //tell canvas to use whole column
+  renderer = new THREE.WebGLRenderer( { canvas:canvas, antialias: true } );    //The WebGL renderer displays the created scenes using WebGL (CONSTRUCTOR)
   renderer.setPixelRatio( window.devicePixelRatio );            //Set renderer pixelRatio
-  renderer.setSize( window.innerWidth, window.outerHeight );    //Set renderer size
-  document.body.appendChild( renderer.domElement );             //Some setting i always see return, has to do something with an HTML element and the render canvas
-
+  renderer.setSize( canvas.width, canvas.height);    //Set renderer size
+//   document.body.appendChild( renderer.domElement );             //Some setting i always see return, has to do something with an HTML element and the render canvas
+canvas
   /*    Camera setup    */
-  camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.1, 2000 );    //Set the camera's FoV, the heigth and width, the nearest plane, the furthest plane (CONSTRUCTOR)
+  camera = new THREE.PerspectiveCamera( 90, canvas.width / canvas.height, 0.1, 2000 );    //Set the camera's FoV, the heigth and width, the nearest plane, the furthest plane (CONSTRUCTOR)
   camera.position.set( 10, 5, -10 );     //set start position
 
   /*    Controls setup    */
