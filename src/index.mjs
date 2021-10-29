@@ -5,10 +5,12 @@ import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { lastIndexOf } from "lodash";
+"use strict";
 
 /*Declare Variables*/
 let camera, controls, scene, renderer, mesh = [];
 let Steps = [8], meshCounter;
+// const threeCanvas = document.querySelector('#threeCanvas');
 
 init();
 //render(); // remove when using next line for animation loop (requestAnimationFrame)
@@ -22,15 +24,15 @@ function init() {
   scene.fog = new THREE.FogExp2( 0x212224, 0.0025 );  //Add some nice fog, default 0.00025
 
   /*    Render setup    */
-  const canvas = document.getElementById('three');
+//   const threeCanvas = document.querySelector('#threeCanvas');
 //   canvas.height = window.innerHeight;   //tell canvas to use whole column
-  renderer = new THREE.WebGLRenderer( { canvas:canvas, antialias: true } );    //The WebGL renderer displays the created scenes using WebGL (CONSTRUCTOR)
+  renderer = new THREE.WebGLRenderer( { canvas:document.querySelector('canvas'), antialias: true } );    //The WebGL renderer displays the created scenes using WebGL (CONSTRUCTOR)
   renderer.setPixelRatio( window.devicePixelRatio );            //Set renderer pixelRatio
-  renderer.setSize( canvas.width, canvas.height);    //Set renderer size
+  renderer.setSize( threeCanvas.offsetWidth, threeCanvas.offsetHeight);    //Set renderer size
 //   document.body.appendChild( renderer.domElement );             //Some setting i always see return, has to do something with an HTML element and the render canvas
-canvas
+
   /*    Camera setup    */
-  camera = new THREE.PerspectiveCamera( 90, canvas.width / canvas.height, 0.1, 2000 );    //Set the camera's FoV, the heigth and width, the nearest plane, the furthest plane (CONSTRUCTOR)
+  camera = new THREE.PerspectiveCamera( 90, threeCanvas.clientWidth / threeCanvas.clientHeight, 0.1, 2000 );    //Set the camera's FoV, the heigth and width, the nearest plane, the furthest plane (CONSTRUCTOR)
   camera.position.set( 10, 5, -10 );     //set start position
 
   /*    Controls setup    */
@@ -128,9 +130,18 @@ canvas
 }
 
 function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize( window.innerWidth, window.innerHeight );
+    const canvas = renderer.domElement;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if (canvas.width !== width ||canvas.height !== height) {
+        // you must pass false here or three.js sadly fights the browser
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height, false);
+    }
+//   camera.aspect = window.innerWidth / window.innerHeight;
+//   camera.updateProjectionMatrix();
+//   renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
 function animate() {
