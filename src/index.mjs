@@ -153,3 +153,8 @@ function animate() {
 function render() {
   renderer.render( scene, camera );
 }
+
+// function getData(){
+//     const editor = document.querySelector('editor'),
+//     form = editor.querySelectorAll('.form'),
+// }
