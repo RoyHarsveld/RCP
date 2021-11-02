@@ -44,7 +44,7 @@ function init() {
 
   controls.screenSpacePanning = true;    //Best controlable
 
-  controls.minDistance = 10;             //how far you can zoom in. Default is 0.
+  controls.minDistance = 0;             //how far you can zoom in. Default is 0. /10
   controls.maxDistance = 500;             //how far you can zoom out. Default is indefinite.
   controls.maxPolarAngle = Math.PI / 2;   //How far you can orbit vertically, upper limit. Range is 0 to Math.PI radians, and default is Math.PI.
 
@@ -55,16 +55,16 @@ function init() {
   scene.add (gridHelper, axesHelper);
 
   /*    World setup   */
-  /*geometry setup*/
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  geometry.translate( 0.5, 0.5, 0.5 );
+//   /*geometry setup*/
+  const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+  boxGeometry.translate( 0.5, 0.5, 0.5 );
 
   /*material setup*/
   const material = new THREE.MeshLambertMaterial( { color: 0xffffff, flatShading: true } );
 
   /*mesh setup*/
   for (meshCounter = 0; meshCounter < 8; meshCounter++){
-    mesh[meshCounter] = new THREE.Mesh( geometry, material );
+    mesh[meshCounter] = new THREE.Mesh( boxGeometry, material );
 
     //set scale
     mesh[meshCounter].scale.x = 1000 / 100;
@@ -106,6 +106,73 @@ function init() {
   wallPlane.position.z = 0;
 
   scene.add( wallPlane );
+
+  /*Moasure geometry*/
+
+    const points = [];   //vector3(x, y, z)
+    points.push( new THREE.Vector3(0.0,0.0,0.0));
+    points.push( new THREE.Vector3(0.0972,0.0,0.2003));
+    points.push( new THREE.Vector3(0.3086,0.0,0.4009));
+    points.push( new THREE.Vector3(0.5166,0.0,0.6195));
+    points.push( new THREE.Vector3(0.7245,0.0,0.8214));
+    points.push( new THREE.Vector3(0.9306,0.0,1.0216));
+    points.push( new THREE.Vector3(1.1324,0.0,1.2245));
+    points.push( new THREE.Vector3(1.3409,0.0,1.4247));
+    points.push( new THREE.Vector3(1.5338,0.0,1.6308));
+    points.push( new THREE.Vector3(1.7496,0.0,1.8495));
+    points.push( new THREE.Vector3(1.9447,0.0,2.0499));
+    points.push( new THREE.Vector3(3.5007,0.0,2.0519));
+    points.push( new THREE.Vector3(3.5007,2.7647,2.0562));
+    points.push( new THREE.Vector3(2.1715,2.7647,2.264));
+    points.push( new THREE.Vector3(1.9722,2.7647,2.4687));
+    points.push( new THREE.Vector3(1.7759,2.7647,2.6726));
+    points.push( new THREE.Vector3(1.5742,2.7647,2.8715));
+    points.push( new THREE.Vector3(1.3735,2.7647,3.0763));
+    points.push( new THREE.Vector3(1.1822,2.7647,3.2839));
+    points.push( new THREE.Vector3(0.9796,2.7647,3.4888));
+    points.push( new THREE.Vector3(0.7788,2.7647,3.6934));
+    points.push( new THREE.Vector3(0.5789,2.7647,3.8938));
+    points.push( new THREE.Vector3(0.3803,2.7647,4.1019));
+    points.push( new THREE.Vector3(0.1858,2.7647,4.3026));
+    points.push( new THREE.Vector3(-0.021,2.7647,4.5091));
+    points.push( new THREE.Vector3(-0.2214,2.7647,4.7138));
+    points.push( new THREE.Vector3(-0.4558,2.7647,4.7175));
+    points.push( new THREE.Vector3(-0.4558,1.5501,4.7171));
+    points.push( new THREE.Vector3(-0.2131,1.5501,4.7165));
+    points.push( new THREE.Vector3(-0.0027,1.5501,4.51));
+    points.push( new THREE.Vector3(0.1966,1.5501,4.3032));
+    points.push( new THREE.Vector3(0.4007,1.5501,4.0969));
+    points.push( new THREE.Vector3(0.5905,1.5501,3.8914));
+    points.push( new THREE.Vector3(0.7857,1.5501,3.686));
+    points.push( new THREE.Vector3(0.9768,1.5501,3.4816));
+    points.push( new THREE.Vector3(1.1799,1.5501,3.2757));
+    points.push( new THREE.Vector3(1.3914,1.5501,3.0711));
+    points.push( new THREE.Vector3(1.5935,1.5501,2.8633));
+    points.push( new THREE.Vector3(1.8012,1.5501,2.6631));
+    points.push( new THREE.Vector3(2.0031,1.5501,2.4577));
+    points.push( new THREE.Vector3(2.2021,1.5501,2.2513));
+    points.push( new THREE.Vector3(2.3133,1.1774,2.0442));
+    points.push( new THREE.Vector3(1.8588,1.1774,2.0479));
+    points.push( new THREE.Vector3(1.6543,1.1774,1.8419));
+    points.push( new THREE.Vector3(1.4493,1.1774,1.638));
+    points.push( new THREE.Vector3(1.2501,1.1774,1.4322));
+    points.push( new THREE.Vector3(1.0535,1.1774,1.2282));
+    points.push( new THREE.Vector3(0.8534,1.1774,1.0211));
+    points.push( new THREE.Vector3(0.6579,1.1774,0.8178));
+    points.push( new THREE.Vector3(0.4564,1.1774,0.6138));
+    points.push( new THREE.Vector3(0.2617,1.1774,0.4092));
+    points.push( new THREE.Vector3(0.0618,1.1774,0.2099));
+    points.push( new THREE.Vector3(0.0,1.1774,0.004));
+    points.push( new THREE.Vector3(0.0,0.0,0.0));
+    
+    const pointMaterial = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false } );
+    // const lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+    const pointGeometry = new THREE.BufferGeometry().setFromPoints( points );
+    const point = new THREE.Points(pointGeometry, pointMaterial);
+    // const line = new THREE.Line( geometry, lineMaterial );
+    // scene.add( line );
+    scene.add(point);
+
 
 
   /*Lightning setup*/
