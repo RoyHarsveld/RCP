@@ -39,10 +39,13 @@ let shapes = {};
 
 init();
 render(); // remove when using next line for animation loop (requestAnimationFrame)
+// const selectElement = document.querySelector('#stepNumber');
+// selectElement.addEventListener('change', (event) => {
+//     init();
+// });
 // animate();
 
 function init() {
-
     /*    Scene setup   */
     scene = new THREE.Scene();                          //Create a new scene (CONSTRUCTOR)
     scene.background = new THREE.Color( 0x212224 );     //Add backgroundcolor to the scene
@@ -339,6 +342,27 @@ function render() {
 	// targetMesh.updateMatrixWorld();
 
 	// stats.begin();
+    // console.log(document.getElementById('amountOfSteps').value);
+    var elm = {};
+    var elms = document.getElementById('step1').getElementsByTagName("*");
+    // console.log(elms);
+    var step1Length, step1Width, step1Height, step1Angle;
+    for (var i = 0; i < elms.length; i++) {
+        if (elms[i].id === "L") {
+            step1Length = elms[i].value;
+        }
+        if (elms[i].id === "B") {
+            step1Width = elms[i].value;
+        }
+        if (elms[i].id === "H") {
+            step1Height = elms[i].value;
+        }
+        if (elms[i].id === "A") {
+            step1Angle = elms[i].value;
+        }
+    }
+    console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
+    // console.log('test');
 
 	if ( boundsViz ) boundsViz.update();
     controls.update();
