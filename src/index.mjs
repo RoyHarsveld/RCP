@@ -1,72 +1,133 @@
 import "./styles.css";
-import bootstrap from 'bootstrap'
+import "./render.mjs";
+// import bootstrap from 'bootstrap'
 import _ from 'lodash';
+
 import * as THREE from 'three';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast, MeshBVHVisualizer } from 'three-mesh-bvh';
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { lastIndexOf } from "lodash";
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+// import { lastIndexOf } from "lodash";
 "use strict";
 
+/*three-mesh-bvh setup*/
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+/*three-mesh-bvh setup*/
+
+const params = {
+
+    speed: 1,
+    visualizeBounds: true,
+    visualBoundsDepth: 10,
+    shape: 'sphere',
+    position: new THREE.Vector3(),
+    rotation: new THREE.Euler(),
+    scale: new THREE.Vector3( 1, 1, 1 ),
+};
+
+
 /*Declare Variables*/
-let camera, controls, scene, renderer, mesh = [];
+
+let camera, controls, scene, renderer, mesh = [], boundsViz, transformControls;
 let Steps = [8], meshCounter;
+let targetMesh;
+let shapes = {};
 // const threeCanvas = document.querySelector('#threeCanvas');
 
 init();
-//render(); // remove when using next line for animation loop (requestAnimationFrame)
-animate();
+render(); // remove when using next line for animation loop (requestAnimationFrame)
+// animate();
 
 function init() {
 
-  /*    Scene setup   */
-  scene = new THREE.Scene();                          //Create a new scene (CONSTRUCTOR)
-  scene.background = new THREE.Color( 0x212224 );     //Add backgroundcolor to the scene
-  scene.fog = new THREE.FogExp2( 0x212224, 0.0025 );  //Add some nice fog, default 0.00025
+    /*    Scene setup   */
+    scene = new THREE.Scene();                          //Create a new scene (CONSTRUCTOR)
+    scene.background = new THREE.Color( 0x212224 );     //Add backgroundcolor to the scene
+    scene.fog = new THREE.FogExp2( 0x212224, 0.0025 );  //Add some nice fog, default 0.00025
 
-  /*    Render setup    */
-//   const threeCanvas = document.querySelector('#threeCanvas');
-//   canvas.height = window.innerHeight;   //tell canvas to use whole column
-  renderer = new THREE.WebGLRenderer( { canvas:document.querySelector('canvas'), antialias: true } );    //The WebGL renderer displays the created scenes using WebGL (CONSTRUCTOR)
-  renderer.setPixelRatio( window.devicePixelRatio );            //Set renderer pixelRatio
-  renderer.setSize( threeCanvas.offsetWidth, threeCanvas.offsetHeight);    //Set renderer size
-//   document.body.appendChild( renderer.domElement );             //Some setting i always see return, has to do something with an HTML element and the render canvas
+    /*    Render setup    */
+    //   const threeCanvas = document.querySelector('#threeCanvas');
+    //   canvas.height = window.innerHeight;   //tell canvas to use whole column
+    renderer = new THREE.WebGLRenderer( { canvas:document.querySelector('canvas'), antialias: true } );    //The WebGL renderer displays the created scenes using WebGL (CONSTRUCTOR)
+    renderer.setPixelRatio( window.devicePixelRatio );            //Set renderer pixelRatio
+    renderer.setSize( threeCanvas.offsetWidth, threeCanvas.offsetHeight);    //Set renderer size
+    //   document.body.appendChild( renderer.domElement );             //Some setting i always see return, has to do something with an HTML element and the render canvas
 
-  /*    Camera setup    */
-  camera = new THREE.PerspectiveCamera( 90, threeCanvas.clientWidth / threeCanvas.clientHeight, 0.1, 2000 );    //Set the camera's FoV, the heigth and width, the nearest plane, the furthest plane (CONSTRUCTOR)
-  camera.position.set( 10, 5, -10 );     //set start position
+    /*      Lightning setup     */
+    const dirLight1 = new THREE.DirectionalLight( 0xb5b1b1, 0.8 );
+    dirLight1.position.set( 100, 100, 100 );
+    scene.add( dirLight1 );
 
-  /*    Controls setup    */
-  controls = new OrbitControls( camera, renderer.domElement );  //Create new controls for camera and the render canvas.
-  //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+    const dirLight2 = new THREE.DirectionalLight( 0xa3a9d1 );
+    dirLight2.position.set( -100, 100, -100 );
+    scene.add( dirLight2 );
 
-  controls.enableDamping = true;          //Give some weight to the controls
-  controls.dampingFactor = 0.05;          //Nice value for controlweight 
+    const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
+    scene.add( ambientLight );
 
-  controls.screenSpacePanning = true;    //Best controlable
+    /*    Camera setup    */
+    camera = new THREE.PerspectiveCamera( 90, threeCanvas.clientWidth / threeCanvas.clientHeight, 0.1, 2000 );    //Set the camera's FoV, the heigth and width, the nearest plane, the furthest plane (CONSTRUCTOR)
+    camera.position.set( 10, 5, -10 );     //set start position
 
-  controls.minDistance = 0;             //how far you can zoom in. Default is 0. /10
-  controls.maxDistance = 500;             //how far you can zoom out. Default is indefinite.
-  controls.maxPolarAngle = Math.PI / 2;   //How far you can orbit vertically, upper limit. Range is 0 to Math.PI radians, and default is Math.PI.
+    /*    Transform Controls    */
+    transformControls = new TransformControls( camera, renderer.domElement );
+    scene.add( transformControls );
+   
+    /*    Controls setup    */
+    controls = new OrbitControls( camera, renderer.domElement );  //Create new controls for camera and the render canvas.
+    //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+    controls.enableDamping = true;          //Give some weight to the controls
+    controls.dampingFactor = 0.05;          //Nice value for controlweight 
+    controls.screenSpacePanning = true;    //Best controlable
+    controls.minDistance = 0;             //how far you can zoom in. Default is 0. /10
+    controls.maxDistance = 500;             //how far you can zoom out. Default is indefinite.
+    controls.maxPolarAngle = Math.PI / 2;   //How far you can orbit vertically, upper limit. Range is 0 to Math.PI radians, and default is Math.PI.
 
-  /*HELPER TOOLS*/
-  const gridHelper = new THREE.GridHelper(100, 100);
-  const axesHelper = new THREE.AxesHelper(50);
+    /*HELPER TOOLS*/
+    const gridHelper = new THREE.GridHelper(100, 100);
+    const axesHelper = new THREE.AxesHelper(50);
+    scene.add (gridHelper, axesHelper);
 
-  scene.add (gridHelper, axesHelper);
 
-  /*    World setup   */
-//   /*geometry setup*/
-  const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-  boxGeometry.translate( 0.5, 0.5, 0.5 );
 
-  /*material setup*/
-  const material = new THREE.MeshLambertMaterial( { color: 0xffffff, flatShading: true } );
 
-  /*mesh setup*/
-  for (meshCounter = 0; meshCounter < 8; meshCounter++){
-    mesh[meshCounter] = new THREE.Mesh( boxGeometry, material );
 
-    //set scale
+/*    World setup   */
+    /*geometry setup*/
+    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+    boxGeometry.translate( 0.5, 0.5, 0.5 );
+
+    //geometry setup
+	const knotGeometry = new THREE.TorusKnotBufferGeometry( 1, 0.4, 400, 100 );
+	const knotMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, side: THREE.DoubleSide } );
+	targetMesh = new THREE.Mesh( knotGeometry, knotMaterial );
+	targetMesh.geometry.computeBoundsTree();
+	scene.add( targetMesh );
+
+    /*shapeMaterial setup*/
+    const shapeMaterial = new THREE.MeshLambertMaterial( { 
+        color: 0xffffff, 
+        flatShading: true 
+    } );
+
+    shapes.sphere = new THREE.Mesh( new THREE.SphereBufferGeometry( 1, 50, 50 ), shapeMaterial );
+	scene.add( shapes.sphere );
+
+	shapes.box = new THREE.Mesh( new THREE.BoxBufferGeometry( 1, 1, 1 ), shapeMaterial );
+	scene.add( shapes.box );
+
+	shapes.geometry = new THREE.Mesh( new THREE.TorusKnotBufferGeometry( .5, .2, 200, 50 ), shapeMaterial );
+	shapes.geometry.geometry.computeBoundsTree();
+	scene.add( shapes.geometry );
+
+    /*mesh setup*/
+    for (meshCounter = 0; meshCounter < 8; meshCounter++){
+    mesh[meshCounter] = new THREE.Mesh( boxGeometry, shapeMaterial );
+
+    //set scale  x(width), y(height), z(depth)
     mesh[meshCounter].scale.x = 1000 / 100;
     mesh[meshCounter].scale.y = 30 / 100;
     mesh[meshCounter].scale.z = 250 / 100;
@@ -74,11 +135,11 @@ function init() {
     //set position
     mesh[meshCounter].position.x = 0;
     if (meshCounter == 0){
-      mesh[meshCounter].position.y = 165 / 100;
-      mesh[meshCounter].position.z = 0;
+        mesh[meshCounter].position.y = 165 / 100;
+        mesh[meshCounter].position.z = 0;
     } else {
-      mesh[meshCounter].position.y = mesh[meshCounter -1].position.y + 165 / 100;  
-      mesh[meshCounter].position.z = mesh[meshCounter -1].scale.z + mesh[meshCounter -1].position.z;
+        mesh[meshCounter].position.y = mesh[meshCounter -1].position.y + 165 / 100;  
+        mesh[meshCounter].position.z = mesh[meshCounter -1].scale.z + mesh[meshCounter -1].position.z;
     }
     //mesh[meshCounter].position.z = 0;
 
@@ -88,28 +149,35 @@ function init() {
     //add create steps
     Steps.push(mesh[meshCounter]);
     scene.add( Steps[meshCounter] );
-  }
+    }
 
-  //CREATE WALLPLANE
-  const wallPlaneGeometry = new THREE.PlaneGeometry( 1, 1 );
-  wallPlaneGeometry.translate( 0.5, 0.5, 0.5 );
+    //CREATE WALLPLANE
+    const wallPlaneGeometry = new THREE.PlaneGeometry( 1, 1 );
+    wallPlaneGeometry.translate( 0.5, 0.5, 0.5 );
 
-  const planeMaterial = new THREE.MeshBasicMaterial( {color: 0x2e3857, side: THREE.DoubleSide} );
+    const planeMaterial = new THREE.MeshBasicMaterial( {color: 0x2e3857, side: THREE.DoubleSide} );
 
-  const wallPlane = new THREE.Mesh( wallPlaneGeometry, planeMaterial );
-  wallPlane.scale.x = mesh[0].scale.x;
-  wallPlane.scale.y = mesh[7].position.y;
-  wallPlane.scale.z = 0;
+    const wallPlane = new THREE.Mesh( wallPlaneGeometry, planeMaterial );
+    wallPlane.geometry.computeBoundsTree();
+    const wallplaneScaleX = 20;
+    // for (const x = 0; x < 8; x++){
+    //     wallplaneScaleX = wallplaneScaleX + mesh[x].scale.z;
+    // }
+    // wallPlane.scale.x = mesh[6].scale.z;
+    wallPlane.scale.x = wallplaneScaleX;
+    wallPlane.scale.y = mesh[6].position.y;
+    wallPlane.scale.z = 0;
+    wallPlane.rotation.y = -Math.PI /2;
 
-  wallPlane.position.x = 0;
-  wallPlane.position.y = 0;
-  wallPlane.position.z = 0;
+    wallPlane.position.x = 0;
+    wallPlane.position.y = 0;
+    wallPlane.position.z = 0;
 
-  scene.add( wallPlane );
+    scene.add( wallPlane );
 
-  /*Moasure geometry*/
+    /*Moasure geometry*/
 
-    const points = [];   //vector3(x, y, z)
+    const points = [];   //vector3(x(depth), y(width), z(height))
     points.push( new THREE.Vector3(0.0,0.0,0.0));
     points.push( new THREE.Vector3(0.0972,0.0,0.2003));
     points.push( new THREE.Vector3(0.3086,0.0,0.4009));
@@ -164,7 +232,7 @@ function init() {
     points.push( new THREE.Vector3(0.0618,1.1774,0.2099));
     points.push( new THREE.Vector3(0.0,1.1774,0.004));
     points.push( new THREE.Vector3(0.0,0.0,0.0));
-    
+
     const pointMaterial = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false } );
     // const lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
     const pointGeometry = new THREE.BufferGeometry().setFromPoints( points );
@@ -173,30 +241,67 @@ function init() {
     // scene.add( line );
     scene.add(point);
 
+    /**/
+    // window.addEventListener( 'resize', onWindowResize );
 
+    /*    Add GUI   */
+    const gui = new GUI();
+    gui.add( controls, 'screenSpacePanning' );
+    gui.add( params, 'speed' ).min( 0 ).max( 10 );
+    gui.add( params, 'visualizeBounds' ).onChange( () => updateFromOptions() );
+    gui.add( params, 'visualBoundsDepth' ).min( 1 ).max( 40 ).step( 1 ).onChange( () => updateFromOptions() );
+    gui.add( params, 'shape', [ 'sphere', 'box', 'geometry' ] );
 
-  /*Lightning setup*/
-  const dirLight1 = new THREE.DirectionalLight( 0xb5b1b1, 0.8 );
-  dirLight1.position.set( 100, 100, 100 );
-  scene.add( dirLight1 );
+    gui.add( transformControls, 'mode', [ 'translate', 'rotate' ] );
 
-  const dirLight2 = new THREE.DirectionalLight( 0xa3a9d1 );
-  dirLight2.position.set( -100, 100, -100 );
-  scene.add( dirLight2 );
+    const posFolder = gui.addFolder( 'position' );
+    posFolder.add( params.position, 'x' ).min( - 5 ).max( 5 ).step( 0.001 );
+    posFolder.add( params.position, 'y' ).min( - 5 ).max( 5 ).step( 0.001 );
+    posFolder.add( params.position, 'z' ).min( - 5 ).max( 5 ).step( 0.001 );
+    posFolder.open();
 
-  const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
-  scene.add( ambientLight );
+    const rotFolder = gui.addFolder( 'rotation' );
+    rotFolder.add( params.rotation, 'x' ).min( - Math.PI ).max( Math.PI ).step( 0.001 );
+    rotFolder.add( params.rotation, 'y' ).min( - Math.PI ).max( Math.PI ).step( 0.001 );
+    rotFolder.add( params.rotation, 'z' ).min( - Math.PI ).max( Math.PI ).step( 0.001 );
+    rotFolder.open();
 
-  /**/
-  window.addEventListener( 'resize', onWindowResize );
+    gui.open();
 
-  /*    Add GUI   */
-  const gui = new GUI();
-  gui.add( controls, 'screenSpacePanning' );
+    transformControls.addEventListener( 'change', function () {
 
-}
+        params.position.copy( shapes[ params.shape ].position );
+        params.rotation.copy( shapes[ params.shape ].rotation );
+        params.scale.copy( shapes[ params.shape ].scale );
+        gui.updateDisplay();
 
-function onWindowResize() {
+    } );
+
+    transformControls.addEventListener( 'mouseDown', function () {
+
+        controls.enabled = false;
+
+    } );
+
+    transformControls.addEventListener( 'mouseUp', function () {
+
+        controls.enabled = true;
+
+    } );
+
+    controls.addEventListener( 'start', function () {
+
+        transformControls.enabled = false;
+
+    } );
+
+    controls.addEventListener( 'end', function () {
+
+        transformControls.enabled = true;
+
+    } );
+
+    window.addEventListener( 'resize', function () {
     const canvas = renderer.domElement;
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
@@ -205,21 +310,39 @@ function onWindowResize() {
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
         renderer.setSize(width, height, false);
-    }
-//   camera.aspect = window.innerWidth / window.innerHeight;
-//   camera.updateProjectionMatrix();
-//   renderer.setSize( window.innerWidth, window.innerHeight );
+    }}, false );
+
+	window.addEventListener( 'keydown', function ( e ) {
+
+		switch ( e.key ) {
+
+			case 'w':
+				transformControls.mode = 'translate';
+				break;
+			case 'e':
+				transformControls.mode = 'rotate';
+				break;
+
+		}
+
+		gui.updateDisplay();
+
+	} );
 }
 
-function animate() {
-  requestAnimationFrame( animate );
-  controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
-  render();
-}
 
-function render() {
-  renderer.render( scene, camera );
-}
+// let lastTime = window.performance.now();
+
+
+// function animate() {
+// requestAnimationFrame( animate );
+// controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+// renderer.render( scene, camera );
+// }
+
+// function render() {
+// renderer.render( scene, camera );
+// }
 
 // function getData(){
 //     const editor = document.querySelector('editor'),
