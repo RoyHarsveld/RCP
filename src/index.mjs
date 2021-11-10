@@ -26,10 +26,21 @@ var camera, controls, scene, renderer, mesh = [], boundsViz, transformControls, 
 var step1Length = 1, step1Width =1 , step1Height=1, step1Angle=1;
 
 init();
+<<<<<<< HEAD
 render(); 
 
 function init() {
     console.log("Init");
+=======
+render(); // remove when using next line for animation loop (requestAnimationFrame)
+// const selectElement = document.querySelector('#stepNumber');
+// selectElement.addEventListener('change', (event) => {
+//     init();
+// });
+// animate();
+
+function init() {
+>>>>>>> 88b5c90cb266182f577f619bf7ba668a1c22c550
     /*    Scene setup   */
     scene = new THREE.Scene();                          //Create a new scene (CONSTRUCTOR)
     scene.background = new THREE.Color( 0x212224 );     //Add backgroundcolor to the scene
@@ -179,7 +190,40 @@ function init() {
 }
 
 function render() {
+<<<<<<< HEAD
     console.log("Render");
+=======
+
+	// const delta = window.performance.now() - lastTime;
+	// lastTime = window.performance.now();
+
+	// targetMesh.rotation.y += params.speed * delta * 0.001;
+	// targetMesh.updateMatrixWorld();
+
+	// stats.begin();
+    // console.log(document.getElementById('amountOfSteps').value);
+    var elm = {};
+    var elms = document.getElementById('step1').getElementsByTagName("*");
+    // console.log(elms);
+    var step1Length, step1Width, step1Height, step1Angle;
+    for (var i = 0; i < elms.length; i++) {
+        if (elms[i].id === "L") {
+            step1Length = elms[i].value;
+        }
+        if (elms[i].id === "B") {
+            step1Width = elms[i].value;
+        }
+        if (elms[i].id === "H") {
+            step1Height = elms[i].value;
+        }
+        if (elms[i].id === "A") {
+            step1Angle = elms[i].value;
+        }
+    }
+    console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
+    // console.log('test');
+
+>>>>>>> 88b5c90cb266182f577f619bf7ba668a1c22c550
 	if ( boundsViz ) boundsViz.update();
     controls.update();
 	renderer.render( scene, camera );
