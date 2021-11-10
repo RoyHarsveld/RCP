@@ -18,15 +18,16 @@ const params = {
     shape: 'step',
     position: new THREE.Vector3(),
     rotation: new THREE.Euler(),
-    scale: new THREE.Vector3( 100, 100, 100 ),
+    scale: new THREE.Vector3( 1, 1, 1),
 };
 
 /*Declare Variables*/
 var camera, controls, scene, renderer, mesh = [], boundsViz, transformControls, Steps = [8], meshCounter = 0, targetMesh, staircase = {};
 var step1Length = 1, step1Width =1 , step1Height=1, step1Angle=1;
 var stepGeometry, geometryMaterial;
-var oldAmountOfSteps = 0;
+var oldAmountOfSteps = 1, amountOfSteps;
 
+createDiv();
 init();
 render(); 
 
@@ -182,6 +183,7 @@ function init() {
 }
 
 function render() {
+
     console.log("Render");
     
 	if ( boundsViz ) boundsViz.update();
@@ -248,44 +250,51 @@ function render() {
 function getData(){
     console.log("GetData");
 
-    var amountOfSteps = document.getElementById('amountOfSteps');               //get the amount of steps
-    oldAmountOfSteps;
+    amountOfSteps = document.getElementById('amountOfSteps');               //get the amount of steps
+    if (amountOfSteps.value > 100){
+        amountOfSteps.value = 100;
+    }
     console.log("Amount of steps:", amountOfSteps.value);                       //console display the amount of steps added by the user
 
-    var elms = document.getElementById('step1').getElementsByTagName("*");      
+    for (var i = 0; i < amountOfSteps.value; i++){
 
-    for (var i = 0; i < elms.length; i++) {
-        if (elms[i].id === "L") {
-            step1Length = elms[i].value;
-            // params.scale.z = step1Length / 100;
-        }
-        if (elms[i].id === "W") {
-            step1Width = elms[i].value;
-            // params.scale.x = step1Width / 100;
-        }
-        if (elms[i].id === "H") {
-            step1Height = elms[i].value;
-            // params.scale.y = step1Height / 100;
-        }
-        if (elms[i].id === "A") {
-            step1Angle = elms[i].value;
-        }
-    }
+        var elms = document.getElementById('step1').getElementsByTagName("*");      
 
-    if (oldAmountOfSteps != amountOfSteps.value){
-        console.log("COMPARISON NOT EQUAL");
-        createMeshSteps();
+        for (var j = 0; j < elms.length; j++) {
+            if (elms[j].id === "L") {
+                step1Length = elms[j].value;
+                // params.scale.z = step1Length / 100;
+            }
+            if (elms[j].id === "W") {
+                step1Width = elms[j].value;
+                // params.scale.x = step1Width / 100;
+            }
+            if (elms[j].id === "H") {
+                step1Height = elms[j].value;
+                // params.scale.y = step1Height / 100;
+            }
+            if (elms[j].id === "A") {
+                step1Angle = elms[j].value;
+            }
+        }
+        //TODO: Stop the createMeshSteps when all steps drawed
+        // if (oldAmountOfSteps != amountOfSteps.value && ){
+        //     console.log("COMPARISON NOT EQUAL");
+            createMeshSteps();
+        // }
+        // if (amountOfSteps.value >= 1){
+            oldAmountOfSteps = amountOfSteps.value;
+        // }
+
+        console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
+        console.log("oldAmountOfSteps:", oldAmountOfSteps);
     }
-    oldAmountOfSteps = amountOfSteps.value;
-    console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
-    console.log("oldAmountOfSteps:", oldAmountOfSteps);
 }
 
 function createMeshSteps(){
     
     /*mesh setup*/
-    const meshTarget = document.getElementById('amountOfSteps');
-    console.log("MeshTarget:", meshTarget.value);
+    console.log("CREATING MESH STEPS");
 
     for (meshCounter = 0; meshCounter < oldAmountOfSteps; meshCounter++){
         scene.remove(mesh[meshCounter]);
@@ -318,4 +327,27 @@ function createMeshSteps(){
         //add create steps
         scene.add( mesh[meshCounter] );
     }
+}
+
+function createDiv(){
+    var IButton = document.createElement('button');
+    IButton.type = 'button';
+    IButton.className = 'collapsible';
+    document.getElementById('stepInput').appendChild(IButton);
+    IButton.innerHTML = 'Step 7';
+
+    var iDiv = document.createElement('div');
+    iDiv.id = 'step7';
+    iDiv.className = 'content';
+    document.getElementById('stepInput').appendChild(iDiv);
+    
+    iDiv.innerHTML = "Step 7";
+    
+    // Now create and append to iDiv
+    var innerDiv = document.createElement('div');
+    innerDiv.className = 'block-2';
+    
+    // The variable iDiv is still good... Just append to it.
+    iDiv.appendChild(innerDiv);
+    innerDiv.innerHTML = "I'm the inner div";  
 }
