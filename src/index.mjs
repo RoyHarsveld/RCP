@@ -15,7 +15,7 @@ const params = {
     speed: 1,
     visualizeBounds: true,
     visualBoundsDepth: 10,
-    shape: 'sphere',
+    shape: 'step',
     position: new THREE.Vector3(),
     rotation: new THREE.Euler(),
     scale: new THREE.Vector3( 100, 100, 100 ),
@@ -24,23 +24,14 @@ const params = {
 /*Declare Variables*/
 var camera, controls, scene, renderer, mesh = [], boundsViz, transformControls, Steps = [8], meshCounter = 0, targetMesh, staircase = {};
 var step1Length = 1, step1Width =1 , step1Height=1, step1Angle=1;
+var stepGeometry, geometryMaterial;
+var oldAmountOfSteps = 0;
 
 init();
-<<<<<<< HEAD
 render(); 
 
 function init() {
     console.log("Init");
-=======
-render(); // remove when using next line for animation loop (requestAnimationFrame)
-// const selectElement = document.querySelector('#stepNumber');
-// selectElement.addEventListener('change', (event) => {
-//     init();
-// });
-// animate();
-
-function init() {
->>>>>>> 88b5c90cb266182f577f619bf7ba668a1c22c550
     /*    Scene setup   */
     scene = new THREE.Scene();                          //Create a new scene (CONSTRUCTOR)
     scene.background = new THREE.Color( 0x212224 );     //Add backgroundcolor to the scene
@@ -87,17 +78,19 @@ function init() {
 
 /*    World setup   */
     /*geometryMaterial setup*/
-    const geometryMaterial = new THREE.MeshLambertMaterial( { 
+    geometryMaterial = new THREE.MeshLambertMaterial( { 
         color: 0xffffff, 
-        flatShading: true 
     } );
 
     /*step geometry setup*/
-    const stepGeometry = new THREE.BoxGeometry(1, 1, 1);
+    stepGeometry = new THREE.BoxGeometry(1, 1, 1);
     stepGeometry.translate( 0.5, 0.5, 0.5 );
 
     //geometry setup
     const boxGeometry = new THREE.BoxGeometry(1,1,1);               //create box geometry
+    boxGeometry.translate( 0.5, 0.5, 0.5 );
+
+    //target box mesh
     targetMesh = new THREE.Mesh( boxGeometry, geometryMaterial );   //merge geometry and material into mesh
 	targetMesh.geometry.computeBoundsTree();
 	scene.add( targetMesh );
@@ -117,7 +110,7 @@ function init() {
     gui.add( params, 'speed' ).min( 0 ).max( 10 );
     gui.add( params, 'visualizeBounds' ).onChange( () => updateFromOptions() );
     gui.add( params, 'visualBoundsDepth' ).min( 1 ).max( 40 ).step( 1 ).onChange( () => updateFromOptions() );
-    gui.add( params, 'shape', [ 'sphere', 'step' ] );
+    gui.add( params, 'shape', [ 'step', 'sphere' ] );
 
     gui.add( transformControls, 'mode', [ 'translate', 'rotate' ] );
 
@@ -176,7 +169,6 @@ function init() {
     }}, false );
 
 	window.addEventListener( 'keydown', function ( e ) {
-
 		switch ( e.key ) {
 			case 'w':
 				transformControls.mode = 'translate';
@@ -190,40 +182,8 @@ function init() {
 }
 
 function render() {
-<<<<<<< HEAD
     console.log("Render");
-=======
-
-	// const delta = window.performance.now() - lastTime;
-	// lastTime = window.performance.now();
-
-	// targetMesh.rotation.y += params.speed * delta * 0.001;
-	// targetMesh.updateMatrixWorld();
-
-	// stats.begin();
-    // console.log(document.getElementById('amountOfSteps').value);
-    var elm = {};
-    var elms = document.getElementById('step1').getElementsByTagName("*");
-    // console.log(elms);
-    var step1Length, step1Width, step1Height, step1Angle;
-    for (var i = 0; i < elms.length; i++) {
-        if (elms[i].id === "L") {
-            step1Length = elms[i].value;
-        }
-        if (elms[i].id === "B") {
-            step1Width = elms[i].value;
-        }
-        if (elms[i].id === "H") {
-            step1Height = elms[i].value;
-        }
-        if (elms[i].id === "A") {
-            step1Angle = elms[i].value;
-        }
-    }
-    console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
-    // console.log('test');
-
->>>>>>> 88b5c90cb266182f577f619bf7ba668a1c22c550
+    
 	if ( boundsViz ) boundsViz.update();
     controls.update();
 	renderer.render( scene, camera );
@@ -243,15 +203,17 @@ function render() {
 		    .copy( targetMesh.matrixWorld ).invert()
 			.multiply( shape.matrixWorld );
 
-	if ( s === 'sphere' ) {
-		const sphere = new THREE.Sphere( undefined, 1 );
-		sphere.applyMatrix4( transformMatrix );
+	// if ( s === 'sphere' ) {
+	// 	const sphere = new THREE.Sphere( undefined, 1 );
+	// 	sphere.applyMatrix4( transformMatrix );
 
-		const hit = targetMesh.geometry.boundsTree.intersectsSphere( sphere );
-		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
-		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
+	// 	const hit = targetMesh.geometry.boundsTree.intersectsSphere( sphere );
+	// 	shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
+	// 	shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
 
-	} else if ( s === 'step' ) {
+	// } else 
+
+    if ( s === 'step' ) {
 		const box = new THREE.Box3();
 		box.min.set( - 0.5, - 0.5, - 0.5 );
 		box.max.set( 0.5, 0.5, 0.5 );
@@ -273,7 +235,6 @@ function render() {
 
 // let lastTime = window.performance.now();
 
-
 // function animate() {
 // requestAnimationFrame( animate );
 // controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
@@ -288,6 +249,7 @@ function getData(){
     console.log("GetData");
 
     var amountOfSteps = document.getElementById('amountOfSteps');               //get the amount of steps
+    oldAmountOfSteps;
     console.log("Amount of steps:", amountOfSteps.value);                       //console display the amount of steps added by the user
 
     var elms = document.getElementById('step1').getElementsByTagName("*");      
@@ -295,32 +257,45 @@ function getData(){
     for (var i = 0; i < elms.length; i++) {
         if (elms[i].id === "L") {
             step1Length = elms[i].value;
-            params.scale.z = step1Length / 100;
+            // params.scale.z = step1Length / 100;
         }
         if (elms[i].id === "W") {
             step1Width = elms[i].value;
-            params.scale.x = step1Width / 100;
+            // params.scale.x = step1Width / 100;
         }
         if (elms[i].id === "H") {
             step1Height = elms[i].value;
-            params.scale.y = step1Height / 100;
+            // params.scale.y = step1Height / 100;
         }
         if (elms[i].id === "A") {
             step1Angle = elms[i].value;
         }
     }
+
+    if (oldAmountOfSteps != amountOfSteps.value){
+        console.log("COMPARISON NOT EQUAL");
+        createMeshSteps();
+    }
+    oldAmountOfSteps = amountOfSteps.value;
     console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
+    console.log("oldAmountOfSteps:", oldAmountOfSteps);
 }
 
 function createMeshSteps(){
     
     /*mesh setup*/
-    const meshTarget = document.getElementById('amountOfSteps').getElementsByTagName("*");
-    console.log("MeshTarget:", meshTarget);
-    for (meshCounter = 0; meshCounter < meshTarget; meshCounter++){
+    const meshTarget = document.getElementById('amountOfSteps');
+    console.log("MeshTarget:", meshTarget.value);
+
+    for (meshCounter = 0; meshCounter < oldAmountOfSteps; meshCounter++){
+        scene.remove(mesh[meshCounter]);
+    }
+
+    for (meshCounter = 0; meshCounter < amountOfSteps.value; meshCounter++){
+        
         mesh[meshCounter] = new THREE.Mesh( stepGeometry, geometryMaterial );
 
-        //set scale  x(width), y(height), z(depth)
+        //set scale  x(width), y(height), z(length)
         mesh[meshCounter].scale.x = step1Width / 100;
         mesh[meshCounter].scale.y = 30 / 100;
         mesh[meshCounter].scale.z = step1Length / 100;
@@ -338,10 +313,9 @@ function createMeshSteps(){
 
         mesh[meshCounter].updateMatrix();
         mesh[meshCounter].matrixAutoUpdate = false;
-
+        
+        
         //add create steps
-        Steps.push(mesh[meshCounter]);
-        scene.add( Steps[meshCounter] );
+        scene.add( mesh[meshCounter] );
     }
-
 }

@@ -94,30 +94,30 @@
 
         /*mesh setup*/
         for (meshCounter = 0; meshCounter < 8; meshCounter++){
-            mesh[meshCounter] = new THREE.Mesh( boxGeometry, shapeMaterial );
+        mesh[meshCounter] = new THREE.Mesh( boxGeometry, shapeMaterial );
 
-            //set scale  x(width), y(height), z(depth)
-            mesh[meshCounter].scale.x = 1000 / 100;
-            mesh[meshCounter].scale.y = 30 / 100;
-            mesh[meshCounter].scale.z = 250 / 100;
+        //set scale  x(width), y(height), z(depth)
+        mesh[meshCounter].scale.x = 1000 / 100;
+        mesh[meshCounter].scale.y = 30 / 100;
+        mesh[meshCounter].scale.z = 250 / 100;
 
-            //set position
-            mesh[meshCounter].position.x = 0;
-            if (meshCounter == 0){
-                mesh[meshCounter].position.y = 165 / 100;
-                mesh[meshCounter].position.z = 0;
-            } else {
-                mesh[meshCounter].position.y = mesh[meshCounter -1].position.y + 165 / 100;  
-                mesh[meshCounter].position.z = mesh[meshCounter -1].scale.z + mesh[meshCounter -1].position.z;
-            }
-            //mesh[meshCounter].position.z = 0;
+        //set position
+        mesh[meshCounter].position.x = 0;
+        if (meshCounter == 0){
+            mesh[meshCounter].position.y = 165 / 100;
+            mesh[meshCounter].position.z = 0;
+        } else {
+            mesh[meshCounter].position.y = mesh[meshCounter -1].position.y + 165 / 100;  
+            mesh[meshCounter].position.z = mesh[meshCounter -1].scale.z + mesh[meshCounter -1].position.z;
+        }
+        //mesh[meshCounter].position.z = 0;
 
-            mesh[meshCounter].updateMatrix();
-            mesh[meshCounter].matrixAutoUpdate = false;
+        mesh[meshCounter].updateMatrix();
+        mesh[meshCounter].matrixAutoUpdate = false;
 
-            //add create steps
-            Steps.push(mesh[meshCounter]);
-            scene.add( Steps[meshCounter] );
+        //add create steps
+        Steps.push(mesh[meshCounter]);
+        scene.add( Steps[meshCounter] );
         }
 
         //
