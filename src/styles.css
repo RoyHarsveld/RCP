@@ -12,16 +12,14 @@ html {
     font-size: 1.2em;
     /* (#f08D00) voor oranje, (#5dbaea) voor blauw  */
     background: #f08D00;   
-    align-items: top,center;
+    align-items: stretch;
     width: 100vw;
     height: 100vh;
   }
   #editor {
     padding: 0.5em;
-
     color: #444;
-    flex-shrink: 4;
-    width: 39vw;
+    flex-shrink: 0.01;
   }
   #threeCanvas { 
     width: 100%;

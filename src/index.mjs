@@ -25,9 +25,8 @@ const params = {
 var camera, controls, scene, renderer, mesh = [], boundsViz, transformControls, Steps = [8], meshCounter = 0, targetMesh, staircase = {};
 var step1Length = 1, step1Width =1 , step1Height=1, step1Angle=1;
 var stepGeometry, geometryMaterial;
-var oldAmountOfSteps = 1, amountOfSteps;
+var currentAmountOfSteps = 0, oldAmountOfSteps = 0, amountOfSteps;
 
-createDiv();
 init();
 render(); 
 
@@ -183,8 +182,7 @@ function init() {
 }
 
 function render() {
-
-    console.log("Render");
+    // console.log("Render");
     
 	if ( boundsViz ) boundsViz.update();
     controls.update();
@@ -248,15 +246,23 @@ function render() {
 // }
 
 function getData(){
-    console.log("GetData");
+    // console.log("GetData");
 
-    amountOfSteps = document.getElementById('amountOfSteps');               //get the amount of steps
-    if (amountOfSteps.value > 100){
-        amountOfSteps.value = 100;
+    const amountOfStepsButton = document.getElementById('amountOfStepsButton');
+    amountOfStepsButton.addEventListener("click", () => {
+        amountOfSteps = document.getElementById('amountOfSteps');               //get the amount of steps
+
+        if (amountOfSteps.value > 100){
+            amountOfSteps.value = 100;
+        }
+        currentAmountOfSteps = amountOfSteps.value
+    });
+
+    if (oldAmountOfSteps != currentAmountOfSteps && currentAmountOfSteps > 0){
+        createDiv();
     }
-    console.log("Amount of steps:", amountOfSteps.value);                       //console display the amount of steps added by the user
 
-    for (var i = 0; i < amountOfSteps.value; i++){
+    for (var i = 0; i < currentAmountOfSteps; i++){
 
         var elms = document.getElementById('step1').getElementsByTagName("*");      
 
@@ -278,16 +284,16 @@ function getData(){
             }
         }
         //TODO: Stop the createMeshSteps when all steps drawed
-        // if (oldAmountOfSteps != amountOfSteps.value && ){
+        if (oldAmountOfSteps != currentAmountOfSteps){
         //     console.log("COMPARISON NOT EQUAL");
             createMeshSteps();
-        // }
-        // if (amountOfSteps.value >= 1){
-            oldAmountOfSteps = amountOfSteps.value;
+        }
+        // if (currentAmountOfSteps >= 1){
+            oldAmountOfSteps = currentAmountOfSteps;
         // }
 
-        console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
-        console.log("oldAmountOfSteps:", oldAmountOfSteps);
+        // console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
+        // console.log("oldAmountOfSteps:", oldAmountOfSteps);
     }
 }
 
@@ -300,7 +306,7 @@ function createMeshSteps(){
         scene.remove(mesh[meshCounter]);
     }
 
-    for (meshCounter = 0; meshCounter < amountOfSteps.value; meshCounter++){
+    for (meshCounter = 0; meshCounter < currentAmountOfSteps; meshCounter++){
         
         mesh[meshCounter] = new THREE.Mesh( stepGeometry, geometryMaterial );
 
@@ -330,24 +336,96 @@ function createMeshSteps(){
 }
 
 function createDiv(){
-    var IButton = document.createElement('button');
-    IButton.type = 'button';
-    IButton.className = 'collapsible';
-    document.getElementById('stepInput').appendChild(IButton);
-    IButton.innerHTML = 'Step 7';
+    
+    var buttonText = "";
+    var iDivIdText = "";
 
-    var iDiv = document.createElement('div');
-    iDiv.id = 'step7';
-    iDiv.className = 'content';
-    document.getElementById('stepInput').appendChild(iDiv);
+    console.log("   Current Amount of steps:", currentAmountOfSteps);
+    console.log("   OLD Amount of steps:", oldAmountOfSteps);
+
+    //DELETING INPUT FORMS
+    if((currentAmountOfSteps - oldAmountOfSteps) < 0){
+        console.log("       DELETING INPUT FORMS");
+        const buttonId = document.getElementsByClassName("collapsible");
+        const divId = document.getElementsByClassName("content")
+        
+        var x = oldAmountOfSteps;
+        console.log("x: ", x);
+        for (x; (x - currentAmountOfSteps) > 0; x--){
+            // console.log(x);
+            var lastButtonElement = buttonId[buttonId.length - 1];
+            // var lastDivElement = divId[divId.length - 1];
+            buttonId[buttonId.length - 1].remove(); 
+            divId[divId.length - 1].remove();
+            console.log(lastButtonElement);
+        }
+        
+    }
+    //CREATING INPUT FORMS
+    if ((oldAmountOfSteps - currentAmountOfSteps) < 0) {
+        console.log("       CREATING INPUT FORMS");
+        for (var i = oldAmountOfSteps; i < currentAmountOfSteps; i++ ){
+            var stepCounter = parseInt(i) + 1;
+            buttonText = "Step " + stepCounter;
+            iDivIdText = "step" + stepCounter;
+
+            //create buttons
+            var Button = document.createElement('button');
+            Button.type = 'button';
+            Button.className = 'collapsible';
+            document.getElementById('stepInput').appendChild(Button);
+            Button.innerHTML = buttonText;
+            console.log(Button);
+
+            //create button content
+            var iDiv = document.createElement('div');
+            iDiv.id = iDivIdText;
+            iDiv.className = 'content';
+            document.getElementById('stepInput').appendChild(iDiv);
+            
+            // Now create input forms and append to iDiv
+            var inputLength = document.createElement('input');
+            inputLength.type = 'text';
+            inputLength.className = 'form-control';
+            inputLength.id = 'L';
+            inputLength.placeholder = 'Length'
+            iDiv.appendChild(inputLength);
+
+            var inputWidth = document.createElement('input');
+            inputWidth.type = 'text';
+            inputWidth.className = 'form-control';
+            inputWidth.id = 'W';
+            inputWidth.placeholder = 'Width'
+            iDiv.appendChild(inputWidth);
+
+            var inputHeigth = document.createElement('input');
+            inputHeigth.type = 'text';
+            inputHeigth.className = 'form-control';
+            inputHeigth.id = 'H';
+            inputHeigth.placeholder = 'Height'
+            iDiv.appendChild(inputHeigth);
+
+            var inputAngle = document.createElement('input');
+            inputAngle.type = 'text';
+            inputAngle.className = 'form-control';
+            inputAngle.id = 'A';
+            inputAngle.placeholder = 'Angle'
+            iDiv.appendChild(inputAngle);
+        }
+    }
+    //loop to add collapsible buttons
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
     
-    iDiv.innerHTML = "Step 7";
-    
-    // Now create and append to iDiv
-    var innerDiv = document.createElement('div');
-    innerDiv.className = 'block-2';
-    
-    // The variable iDiv is still good... Just append to it.
-    iDiv.appendChild(innerDiv);
-    innerDiv.innerHTML = "I'm the inner div";  
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
 }

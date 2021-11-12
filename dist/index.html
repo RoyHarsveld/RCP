@@ -14,81 +14,27 @@
 <body>
     <div class="frame">
       <div class="overflow-auto" id="editor">
-          <h4>RAILCONFIGURATOR</h4>
-          <div class="form-group">
-            <label for="amountOfSteps">Amount of steps:</label>
-            <input type="text" class="form-control" id="amountOfSteps" placeholder="1  - 100">
-          </div>
-          <!-- <br>
-          <div id="step1" class="form-group">
-            <label for="amountOfSteps">Step 1</label>
-            <input type="text" class="form-control" id="L" placeholder="Length">
-            <input type="text" class="form-control" id="W" placeholder="Width">
-            <input type="text" class="form-control" id="H" placeholder="Height">
-            <input type="text" class="form-control" id="A" placeholder="Angle">
-          </div> -->
+        <h4>RAILCONFIGURATOR</h4>
+        <label for="amountOfSteps">Amount of steps:</label>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" id="amountOfSteps" placeholder="1  - 100">
+          <button id="amountOfStepsButton" class="btn btn-primary" type="button">Enter</button>
+        </div>
 
-          <!-- <br> -->
-          <button type="button" class="collapsible">Step Measurements</button>
-          <div id="stepInput" class="content">
-
-                <button type="button" class="collapsible">Step 1</button>
-                <div id="step1" class="content">
-                  <input type="text" class="form-control" id="L" placeholder="Length">
-                  <input type="text" class="form-control" id="W" placeholder="Width">
-                  <input type="text" class="form-control" id="H" placeholder="Height">
-                  <input type="text" class="form-control" id="A" placeholder="Angle">
-                </div>
-
-                <button type="button" class="collapsible">Step 2</button>
-                <div id="step2" class="content">
-                  <input type="text" class="form-control" id="L" placeholder="Length">
-                  <input type="text" class="form-control" id="W" placeholder="Width">
-                  <input type="text" class="form-control" id="H" placeholder="Height">
-                  <input type="text" class="form-control" id="A" placeholder="Angle">
-                </div>
-              
-                <button type="button" class="collapsible">Step 3</button>
-                <div id="step3" class="content">
-                  <input type="text" class="form-control" id="L" placeholder="Length">
-                  <input type="text" class="form-control" id="W" placeholder="Width">
-                  <input type="text" class="form-control" id="H" placeholder="Height">
-                  <input type="text" class="form-control" id="A" placeholder="Angle">
-                </div>
-
-                <button type="button" class="collapsible">Step 4</button>
-                <div id="step4" class="content">
-                  <input type="text" class="form-control" id="L" placeholder="Length">
-                  <input type="text" class="form-control" id="W" placeholder="Width">
-                  <input type="text" class="form-control" id="H" placeholder="Height">
-                  <input type="text" class="form-control" id="A" placeholder="Angle">
-                </div>
-
-                <button type="button" class="collapsible">Step 5</button>
-                <div id="step5" class="content">
-                  <input type="text" class="form-control" id="L" placeholder="Length">
-                  <input type="text" class="form-control" id="W" placeholder="Width">
-                  <input type="text" class="form-control" id="H" placeholder="Height">
-                  <input type="text" class="form-control" id="A" placeholder="Angle">
-                </div>
-
-                <button type="button" class="collapsible">Step 6</button>
-                <div id="step6" class="content">
-                  <input type="text" class="form-control" id="L" placeholder="Length">
-                  <input type="text" class="form-control" id="W" placeholder="Width">
-                  <input type="text" class="form-control" id="H" placeholder="Height">
-                  <input type="text" class="form-control" id="A" placeholder="Angle">
-                </div>
-
-          </div>
-
-
-
+        <!-- <button type="button" class="collapsible">Step Measurements</button> -->
+        <div id="stepInput">
+            <!-- <button type="button" class="collapsible">Step 1</button>
+            <div id="step1" class="content">
+              <input type="text" class="form-control" id="L" placeholder="Length">
+              <input type="text" class="form-control" id="W" placeholder="Width">
+              <input type="text" class="form-control" id="H" placeholder="Height">
+              <input type="text" class="form-control" id="A" placeholder="Angle">
+            </div> -->
+        </div>
       </div>
-
-      <div id="threeCanvas">
-        <canvas></canvas>
-      </div>
+    <div id="threeCanvas">
+      <canvas></canvas>
+    </div>
 
     </div>
 
@@ -97,7 +43,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
  </div>
 
-  <script>
+  <!-- <script>
     var coll = document.getElementsByClassName("collapsible");
     var i;
     
@@ -112,7 +58,7 @@
         }
       });
     }
-    </script>
+    </script> -->
 
 
 </body>
