@@ -1,5 +1,6 @@
 import "./styles.css";
 import * as THREE from 'three';
+import guitest from './modules/gui.js';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast, MeshBVHVisualizer } from 'three-mesh-bvh';
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -27,6 +28,7 @@ var step1Length = 1, step1Width =1 , step1Height=1, step1Angle=1;
 var stepGeometry, geometryMaterial;
 var currentAmountOfSteps = 0, oldAmountOfSteps = 0, amountOfSteps;
 
+const gui = new guitest();
 init();
 render(); 
 
