@@ -9,7 +9,7 @@ const isProduction = process.env.NODE_ENV == "development";
 const stylesHandler = "style-loader";
 // "./src/render.mjs"
 const config = {
-  entry: ["./src/index.mjs"],
+  entry: ["./src/index.js"],
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: 'RC.js',
