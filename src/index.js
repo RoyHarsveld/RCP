@@ -4,9 +4,11 @@ import * as THREE from 'three';
 import INITTHREE from './modules/initThree.js';
 import * as INITVAR from './modules/initThree.js';
 
-import OBJECT from './modules/object.js';
-import * as OBJECTVAR from './modules/object.js';
-import { createMeshSteps } from "./modules/object.js";
+import OBJECT from './modules/geometry.js';
+import * as OBJECTVAR from './modules/geometry.js';
+import { createMeshSteps } from "./modules/geometry.js";
+
+import { createDiv } from "./modules/div";
 
 // import guitest from './modules/gui.js';
 // import initThree from "./modules/initThree.js";
@@ -36,9 +38,22 @@ var boundsViz;
 // var stepGeometry, geometryMaterial, targetMesh;
 
 export var currentAmountOfSteps = 0, oldAmountOfSteps = 0, amountOfSteps;
-export var stepLength, stepWidth, stepHeight, stepAngle;
+// export var stepLength, stepWidth, stepHeight, stepAngle;
 export var staircase = {};
+export var steps = [];
+    steps.depth;
+    steps.width;
+    steps.height;
+    steps.angle;
 
+// function Step(length, width, height, angle){
+//     this.length = length;
+//     this.width = width;
+//     this.height= height;
+//     this.angle = angle;
+// }
+
+/*CALL MODULES*/
 const initThree = new INITTHREE();
 const object = new OBJECT();
 
@@ -100,44 +115,48 @@ function getData(){
     // console.log("GetData");
 
     const amountOfStepsButton = document.getElementById('amountOfStepsButton');
+    // Add event listener for gathering the amount of steps
     amountOfStepsButton.addEventListener("click", () => {
-        amountOfSteps = document.getElementById('amountOfSteps');               //get the amount of steps
+        amountOfSteps = document.getElementById('amountOfSteps');   //get the amount of steps
 
         if (amountOfSteps.value > 100){
             amountOfSteps.value = 100;
         }
-        currentAmountOfSteps = amountOfSteps.value
+        currentAmountOfSteps = amountOfSteps.value;
     });
-
+    // Create html step buttons
     if (oldAmountOfSteps != currentAmountOfSteps && currentAmountOfSteps > 0){
         createDiv();
     }
-
+    // for 0 until current amount of steps:
     for (var i = 0; i < currentAmountOfSteps; i++){
-
+        console.log("GATHERING DATA FROM STEP1 FORM");
+        // elms = data from  step 1
         var elms = document.getElementById('step1').getElementsByTagName("*");      
 
         for (var j = 0; j < elms.length; j++) {
+
             if (elms[j].id === "L") {
-                stepLength = elms[j].value;
+                steps[i].depth = elms[j].value;
                 // params.scale.z = step1Length / 100;
             }
             if (elms[j].id === "W") {
-                stepWidth = elms[j].value;
+                steps[i].width = elms[j].value;
                 // params.scale.x = step1Width / 100;
             }
             if (elms[j].id === "H") {
-                stepHeight = elms[j].value;
+                steps[i].height = elms[j].value;
                 // params.scale.y = step1Height / 100;
             }
             if (elms[j].id === "A") {
-                stepAngle = elms[j].value;
+                steps[i].angle = elms[j].value;
             }
         }
         //TODO: Stop the createMeshSteps when all steps drawed
         if (oldAmountOfSteps != currentAmountOfSteps){
         //     console.log("COMPARISON NOT EQUAL");
-            createMeshSteps();
+            console.log("PENIS", steps[i].depth);
+            // createMeshSteps();
         }
         // if (currentAmountOfSteps >= 1){
             oldAmountOfSteps = currentAmountOfSteps;
@@ -146,99 +165,5 @@ function getData(){
         // console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
         // console.log("oldAmountOfSteps:", oldAmountOfSteps);
     }
-}
 
-function createDiv(){
-    
-    var buttonText = "";
-    var iDivIdText = "";
-
-    console.log("   Current Amount of steps:", currentAmountOfSteps);
-    console.log("   OLD Amount of steps:", oldAmountOfSteps);
-
-    //DELETING INPUT FORMS
-    if((currentAmountOfSteps - oldAmountOfSteps) < 0){
-        console.log("       DELETING INPUT FORMS");
-        const buttonId = document.getElementsByClassName("collapsible");
-        const divId = document.getElementsByClassName("content")
-        
-        var x = oldAmountOfSteps;
-        console.log("x: ", x);
-        for (x; (x - currentAmountOfSteps) > 0; x--){
-            // console.log(x);
-            var lastButtonElement = buttonId[buttonId.length - 1];
-            // var lastDivElement = divId[divId.length - 1];
-            buttonId[buttonId.length - 1].remove(); 
-            divId[divId.length - 1].remove();
-            console.log(lastButtonElement);
-        }
-        
-    }
-    //CREATING INPUT FORMS
-    if ((oldAmountOfSteps - currentAmountOfSteps) < 0) {
-        console.log("       CREATING INPUT FORMS");
-        for (var i = oldAmountOfSteps; i < currentAmountOfSteps; i++ ){
-            var stepCounter = parseInt(i) + 1;
-            buttonText = "Step " + stepCounter;
-            iDivIdText = "step" + stepCounter;
-
-            //create buttons
-            var Button = document.createElement('button');
-            Button.type = 'button';
-            Button.className = 'collapsible';
-            document.getElementById('stepInput').appendChild(Button);
-            Button.innerHTML = buttonText;
-            console.log(Button);
-
-            //create button content
-            var iDiv = document.createElement('div');
-            iDiv.id = iDivIdText;
-            iDiv.className = 'content';
-            document.getElementById('stepInput').appendChild(iDiv);
-            
-            // Now create input forms and append to iDiv
-            var inputLength = document.createElement('input');
-            inputLength.type = 'text';
-            inputLength.className = 'form-control';
-            inputLength.id = 'L';
-            inputLength.placeholder = 'Length'
-            iDiv.appendChild(inputLength);
-
-            var inputWidth = document.createElement('input');
-            inputWidth.type = 'text';
-            inputWidth.className = 'form-control';
-            inputWidth.id = 'W';
-            inputWidth.placeholder = 'Width'
-            iDiv.appendChild(inputWidth);
-
-            var inputHeigth = document.createElement('input');
-            inputHeigth.type = 'text';
-            inputHeigth.className = 'form-control';
-            inputHeigth.id = 'H';
-            inputHeigth.placeholder = 'Height'
-            iDiv.appendChild(inputHeigth);
-
-            var inputAngle = document.createElement('input');
-            inputAngle.type = 'text';
-            inputAngle.className = 'form-control';
-            inputAngle.id = 'A';
-            inputAngle.placeholder = 'Angle'
-            iDiv.appendChild(inputAngle);
-        }
-    }
-    //loop to add collapsible buttons
-    var coll = document.getElementsByClassName("collapsible");
-    var i;
-    
-    for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var content = this.nextElementSibling;
-        if (content.style.display === "block") {
-          content.style.display = "none";
-        } else {
-          content.style.display = "block";
-        }
-      });
-    }
 }

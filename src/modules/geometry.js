@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import * as INITVAR from './initThree.js';
+import { steps } from '/src/index.js';
 import { staircase } from '/src/index.js';
 import { oldAmountOfSteps, currentAmountOfSteps, amountOfSteps } from '../index.js';
-import {stepLength, stepWidth, stepHeight, stepAngle} from '/src/index.js';
+
 
 export var _boxGeometry, _material, _targetMesh;
 
@@ -53,7 +54,7 @@ export function createMeshSteps(){
         mesh[meshCounter] = new THREE.Mesh( _boxGeometry, _material );
 
         //set scale  x(width), y(height), z(length)
-        mesh[meshCounter].scale.x = stepWidth / 100;
+        mesh[meshCounter].scale.x = steps[meshCounter].width / 100;
         mesh[meshCounter].scale.y = 30 / 100;
         mesh[meshCounter].scale.z = stepLength / 100;
 
