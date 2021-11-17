@@ -49,7 +49,7 @@ export function createDiv(){
             //create buttons
             var Button = document.createElement('button');
             Button.type = 'button';
-            Button.className = 'collapsible';
+            Button.className = 'collapsible btn';
             document.getElementById('stepInput').appendChild(Button);
             Button.innerHTML = buttonText;
             console.log(Button);
@@ -58,10 +58,12 @@ export function createDiv(){
             var iDiv = document.createElement('div');
             iDiv.id = iDivIdText;
             iDiv.className = 'content';
+            iDiv.style = 'none';
             document.getElementById('stepInput').appendChild(iDiv);
             
             // Now create input forms and append to iDiv
             var inputLength = document.createElement('input');
+            inputLength.value = 200;
             inputLength.type = 'text';
             inputLength.className = 'form-control';
             inputLength.id = 'L';
@@ -69,6 +71,7 @@ export function createDiv(){
             iDiv.appendChild(inputLength);
 
             var inputWidth = document.createElement('input');
+            inputWidth.value = 1000;
             inputWidth.type = 'text';
             inputWidth.className = 'form-control';
             inputWidth.id = 'W';
@@ -76,6 +79,7 @@ export function createDiv(){
             iDiv.appendChild(inputWidth);
 
             var inputHeigth = document.createElement('input');
+            inputHeigth.value = 150;
             inputHeigth.type = 'text';
             inputHeigth.className = 'form-control';
             inputHeigth.id = 'H';
@@ -83,6 +87,7 @@ export function createDiv(){
             iDiv.appendChild(inputHeigth);
 
             var inputAngle = document.createElement('input');
+            inputAngle.value = 90;
             inputAngle.type = 'text';
             inputAngle.className = 'form-control';
             inputAngle.id = 'A';
@@ -92,11 +97,12 @@ export function createDiv(){
     }
     //loop to add collapsible buttons
     var coll = document.getElementsByClassName("collapsible");
+    console.info(coll.length);
     var i;
     
     for (i = 0; i < coll.length; i++) {
       coll[i].addEventListener("click", function() {
-        this.classList.toggle("active");
+        // this.classList.toggle("active");
         var content = this.nextElementSibling;
         if (content.style.display === "block") {
           content.style.display = "none";

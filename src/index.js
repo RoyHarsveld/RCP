@@ -8,6 +8,8 @@ import OBJECT from './modules/geometry.js';
 import * as OBJECTVAR from './modules/geometry.js';
 import { createMeshSteps } from "./modules/geometry.js";
 
+import { _boxGeometry, _material, _targetMesh } from "./modules/geometry.js";
+
 import { createDiv } from "./modules/div";
 
 // import guitest from './modules/gui.js';
@@ -33,33 +35,19 @@ const params = {
 }; export {params};
 
 /*Declare Variables*/
+const Struct = (...keys) => ((...v) => keys.reduce((o, k, i) => {o[k] = v[i]; return o} , {}))
+const item = Struct("length","width","height","angle");
 
 var boundsViz;
-// var stepGeometry, geometryMaterial, targetMesh;
-
+export var stepData = [];
 export var currentAmountOfSteps = 0, oldAmountOfSteps = 0, amountOfSteps;
-// export var stepLength, stepWidth, stepHeight, stepAngle;
 export var staircase = {};
-
-export var steps = [];
-    steps.depth;
-    steps.width;
-    steps.height;
-    steps.angle;
-
-// function Step(length, width, height, angle){
-//     this.length = length;
-//     this.width = width;
-//     this.height= height;
-//     this.angle = angle;
-// }
 
 /*CALL MODULES*/
 const initThree = new INITTHREE();
 const object = new OBJECT();
 
 render(); 
-
 function render() {
     // console.log("Render");
     
@@ -113,73 +101,46 @@ function render() {
 }
 
 function getData(){
-    // console.log("GetData");
-
+    // Add button event listener for gathering the amount of steps
     const amountOfStepsButton = document.getElementById('amountOfStepsButton');
-    // Add event listener for gathering the amount of steps
     amountOfStepsButton.addEventListener("click", () => {
         amountOfSteps = document.getElementById('amountOfSteps');   //get the amount of steps
-
         if (amountOfSteps.value > 100){
             amountOfSteps.value = 100;
         }
         currentAmountOfSteps = amountOfSteps.value;
     });
-    // Create html step buttons
+
     if (oldAmountOfSteps != currentAmountOfSteps && currentAmountOfSteps > 0){
         createDiv();
     }
-
-    const Struct = (...keys) => ((...v) => keys.reduce((o, k, i) => {o[k] = v[i]; return o} , {}))
-    const item = Struct("length","width","height","angle");
-
-    var stepData = [];
-    // for 0 until current amount of steps:
+    stepData = [];
     for (var i = 0; i < currentAmountOfSteps; i++){
-        //console.log("GATHERING DATA FROM STEP1 FORM");
-        // elms = data from  step 1
+        
         var elms = document.getElementById('step' + (i + 1)).getElementsByTagName("*");      
-
         var tempLength, tempWidth, tempHeight, tempAngle;
+
         for (var j = 0; j < elms.length; j++) {
 
             if (elms[j].id === "L") {
                 tempLength = elms[j].value
-                // steps[i].depth = elms[j].value;
-                // params.scale.z = step1Length / 100;
             }
             if (elms[j].id === "W") {
                 tempWidth = elms[j].value
-
-                // steps[i].width = elms[j].value;
-                // params.scale.x = step1Width / 100;
             }
             if (elms[j].id === "H") {
                 tempHeight = elms[j].value
-
-                // steps[i].height = elms[j].value;
-                // params.scale.y = step1Height / 100;
             }
             if (elms[j].id === "A") {
                 tempAngle = elms[j].value
-
-                // steps[i].angle = elms[j].value;
             }
         }
         stepData.push(item(tempLength, tempWidth, tempHeight, tempAngle));
-        //TODO: Stop the createMeshSteps when all steps drawed
-        // if (oldAmountOfSteps != currentAmountOfSteps){
-        //     console.log("COMPARISON NOT EQUAL");
-            // console.log("PENIS", steps[i].depth);
-        createMeshSteps(tempLength, tempWidth, tempHeight, tempAngle);
-        // }
-        // if (currentAmountOfSteps >= 1){
-            oldAmountOfSteps = currentAmountOfSteps;
-        // }
-
-        // console.log("Step 1:", step1Length,step1Width,step1Height,step1Angle);
-        // console.log("oldAmountOfSteps:", oldAmountOfSteps);
+        oldAmountOfSteps = currentAmountOfSteps; //update old amount of steps
     }
-    console.log(stepData);
-
+    
+    if (stepData.length > 0 && stepData[0].height > 0){
+        console.info("STEPDATA:", stepData);
+        createMeshSteps();
+    }
 }

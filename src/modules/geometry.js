@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import * as INITVAR from './initThree.js';
 import { steps } from '/src/index.js';
+import { stepData } from '../index.js';
 import { staircase } from '/src/index.js';
 import { oldAmountOfSteps, currentAmountOfSteps, amountOfSteps } from '../index.js';
 
-
+var mesh = [], meshCounter = 0;
 export var _boxGeometry, _material, _targetMesh;
 
 class OBJECT{
@@ -35,36 +36,30 @@ class OBJECT{
         INITVAR._scene.add( staircase.step );
     }
 }
+export default OBJECT;
 
-export function createMeshSteps(Length,Width,Height,Angle){
+export function createMeshSteps(){
 
-    var mesh = [], meshCounter = 0;
-    // var step1Length = 1, step1Width =1 , step1Height=1, step1Angle=1;
-    // var stepGeometry, geometryMaterial, targetMesh;
-
-    /*mesh setup*/
-    console.log("CREATING MESH STEPS");
-
-    for (var meshCounter = 0; meshCounter < oldAmountOfSteps; meshCounter++){
-        INITVAR._scene.remove(mesh[meshCounter]);
+    for (var i = 0; i < oldAmountOfSteps; i++){
+        console.log("DELETING MESH STEPS");
+        INITVAR._scene.remove( mesh[i] );
     }
 
     for (meshCounter = 0; meshCounter < currentAmountOfSteps; meshCounter++){
-        
         mesh[meshCounter] = new THREE.Mesh( _boxGeometry, _material );
 
         //set scale  x(width), y(height), z(length)
-        mesh[meshCounter].scale.x = Width / 100;
+        mesh[meshCounter].scale.x = stepData[meshCounter].width / 100;
         mesh[meshCounter].scale.y = 30 / 100;
-        mesh[meshCounter].scale.z = Length / 100;
+        mesh[meshCounter].scale.z = stepData[meshCounter].length / 100;
 
         //set position
         mesh[meshCounter].position.x = 0;
         if (meshCounter == 0){
-            mesh[meshCounter].position.y = Height / 100;
+            mesh[meshCounter].position.y = stepData[meshCounter].height / 100;
             mesh[meshCounter].position.z = 0;
         } else {
-            mesh[meshCounter].position.y = mesh[meshCounter -1].position.y + Height / 100;  
+            mesh[meshCounter].position.y = mesh[meshCounter -1].position.y + stepData[meshCounter].height / 100;  
             mesh[meshCounter].position.z = mesh[meshCounter -1].scale.z + mesh[meshCounter -1].position.z;
         }
         //mesh[meshCounter].position.z = 0;
@@ -74,8 +69,8 @@ export function createMeshSteps(Length,Width,Height,Angle){
         
         
         //add create steps
+        console.log("CREATING MESH STEPS!!!!");
         INITVAR._scene.add( mesh[meshCounter] );
     }
 }
 
-export default OBJECT;
