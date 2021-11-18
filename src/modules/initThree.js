@@ -76,7 +76,7 @@ class INITTHREE{
         _gui.add( params, 'speed' ).min( 0 ).max( 10 );
         _gui.add( params, 'visualizeBounds' ).onChange( () => updateFromOptions() );
         _gui.add( params, 'visualBoundsDepth' ).min( 1 ).max( 40 ).step( 1 ).onChange( () => updateFromOptions() );
-        _gui.add( params, 'shape', [ 'step', 'sphere' ] );
+        _gui.add( params, 'shape', [ 'step', 'sphere', 'rail' ] );
     
         _gui.add( _transformControls, 'mode', [ 'translate', 'rotate' ] );
     

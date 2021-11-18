@@ -7,14 +7,16 @@ import * as INITVAR from './modules/initThree.js';
 import OBJECT from './modules/geometry.js';
 import * as OBJECTVAR from './modules/geometry.js';
 import { createMeshSteps } from "./modules/geometry.js";
+import { createRails } from "./modules/geometry.js";
 
-import { _boxGeometry, _material, _targetMesh } from "./modules/geometry.js";
+import { mesh, _boxGeometry, _material, _targetMesh } from "./modules/geometry.js";
 
 import { createDiv } from "./modules/div";
 
 // import guitest from './modules/gui.js';
 // import initThree from "./modules/initThree.js";
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast, MeshBVHVisualizer } from 'three-mesh-bvh';
+import { Object3D } from "three";
 // import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 // import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
@@ -37,6 +39,9 @@ const params = {
 /*Declare Variables*/
 const Struct = (...keys) => ((...v) => keys.reduce((o, k, i) => {o[k] = v[i]; return o} , {}))
 const item = Struct("length","width","height","angle");
+
+// test var
+var oneTime = false;
 
 var boundsViz;
 export var stepData = [];
@@ -70,15 +75,15 @@ function render() {
 		    .copy( OBJECTVAR._targetMesh.matrixWorld ).invert()
 			.multiply( shape.matrixWorld );
 
-	// if ( s === 'sphere' ) {
-	// 	const sphere = new THREE.Sphere( undefined, 1 );
-	// 	sphere.applyMatrix4( transformMatrix );
+	if ( s === 'sphere' ) {
+		const sphere = new THREE.Sphere( undefined, 1 );
+		sphere.applyMatrix4( transformMatrix );
 
-	// 	const hit = targetMesh.geometry.boundsTree.intersectsSphere( sphere );
-	// 	shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
-	// 	shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
+		const hit = OBJECTVAR._targetMesh.geometry.boundsTree.intersectsSphere( sphere );
+		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
+		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
 
-	// } else 
+	}
 
     if ( s === 'step' ) {
 		const box = new THREE.Box3();
@@ -88,7 +93,16 @@ function render() {
 		const hit = OBJECTVAR._targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
 		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
 		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
+	}
 
+    if ( s === 'rail' ) {
+		const box = new THREE.Box3();
+		box.min.set( - 0.5, - 0.5, - 0.5 );
+		box.max.set( 0.5, 0.5, 0.5 );
+
+		const hit = OBJECTVAR._targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
+		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
+		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
 	}
 
 	if ( INITVAR._transformControls.object !== shape ) { 
@@ -142,5 +156,9 @@ function getData(){
     if (stepData.length > 0 && stepData[0].height > 0){
         console.info("STEPDATA:", stepData);
         createMeshSteps();
+    }
+
+    if (mesh.length > 1){
+        createRails();
     }
 }
