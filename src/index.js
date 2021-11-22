@@ -4,12 +4,12 @@ import * as THREE from 'three';
 import INITTHREE from './modules/initThree.js';
 import * as INITVAR from './modules/initThree.js';
 
-import OBJECT from './modules/geometry.js';
-import * as OBJECTVAR from './modules/geometry.js';
-import { createMeshSteps } from "./modules/geometry.js";
+import GEOMETRY from './modules/geometry.js';
+import * as GEOVAR from './modules/geometry.js';
+import { createSteps } from "./modules/geometry.js";
 import { createRails } from "./modules/geometry.js";
 
-import { mesh, _boxGeometry, _material, _targetMesh } from "./modules/geometry.js";
+import { stepMesh, boxGeometry, material, targetMesh } from "./modules/geometry.js";
 
 import { createDiv } from "./modules/div";
 
@@ -40,8 +40,7 @@ const params = {
 const Struct = (...keys) => ((...v) => keys.reduce((o, k, i) => {o[k] = v[i]; return o} , {}))
 const item = Struct("length","width","height","angle");
 
-// test var
-var oneTime = false;
+var stepsCreated, railCreated;
 
 var boundsViz;
 export var stepData = [];
@@ -50,36 +49,36 @@ export var staircase = {};
 
 /*CALL MODULES*/
 const initThree = new INITTHREE();
-const object = new OBJECT();
+const geometry = new GEOMETRY();
 
 render(); 
 function render() {
     // console.log("Render");
     
 	if ( boundsViz ) boundsViz.update();
-    INITVAR._controls.update();
-	INITVAR._renderer.render( INITVAR._scene, INITVAR._camera );
+    INITVAR.controls.update();
+	INITVAR.renderer.render( INITVAR.scene, INITVAR.camera );
 
 	// casts
-	for ( const shape in staircase ) staircase[ shape ].visible = false;
+	// for ( const shape in staircase ) staircase[ shape ].visible = false; //set all shapes invisible
 
 	const s = params.shape;
 	const shape = staircase[ s ];
 	shape.visible = true;
-	shape.position.copy( params.position );
-	shape.rotation.copy( params.rotation );
-	shape.scale.copy( params.scale );
+	// shape.position.copy( params.position );
+	// shape.rotation.copy( params.rotation );
+	// shape.scale.copy( params.scale );
 
 	const transformMatrix =
 		new THREE.Matrix4()
-		    .copy( OBJECTVAR._targetMesh.matrixWorld ).invert()
+		    .copy( GEOVAR.targetMesh.matrixWorld ).invert()
 			.multiply( shape.matrixWorld );
 
 	if ( s === 'sphere' ) {
 		const sphere = new THREE.Sphere( undefined, 1 );
 		sphere.applyMatrix4( transformMatrix );
 
-		const hit = OBJECTVAR._targetMesh.geometry.boundsTree.intersectsSphere( sphere );
+		const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsSphere( sphere );
 		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
 		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
 
@@ -90,7 +89,7 @@ function render() {
 		box.min.set( - 0.5, - 0.5, - 0.5 );
 		box.max.set( 0.5, 0.5, 0.5 );
 
-		const hit = OBJECTVAR._targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
+		const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
 		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
 		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
 	}
@@ -100,13 +99,13 @@ function render() {
 		box.min.set( - 0.5, - 0.5, - 0.5 );
 		box.max.set( 0.5, 0.5, 0.5 );
 
-		const hit = OBJECTVAR._targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
+		const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
 		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
 		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
 	}
 
-	if ( INITVAR._transformControls.object !== shape ) { 
-        INITVAR._transformControls.attach( shape ); 
+	if ( INITVAR.transformControls.object !== shape ) { 
+        INITVAR.transformControls.attach( shape ); 
     }
 
     getData();
@@ -126,6 +125,8 @@ function getData(){
     });
 
     if (oldAmountOfSteps != currentAmountOfSteps && currentAmountOfSteps > 0){
+        stepsCreated = false;
+        railCreated = false;
         createDiv();
     }
     stepData = [];
@@ -150,15 +151,25 @@ function getData(){
             }
         }
         stepData.push(item(tempLength, tempWidth, tempHeight, tempAngle));
-        oldAmountOfSteps = currentAmountOfSteps; //update old amount of steps
     }
     
-    if (stepData.length > 0 && stepData[0].height > 0){
-        console.info("STEPDATA:", stepData);
-        createMeshSteps();
+    if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
+        createSteps();
+        stepsCreated = true;
     }
 
-    if (mesh.length > 1){
+    if (!railCreated && stepMesh.length > 1) {
         createRails();
-    }
+        railCreated = true;
+    }  
+    // if (stepMesh.length > 1) {
+    //     createRails();
+    // }    
+
+    // console.log("Update OLD amount of Steps");
+    
+    oldAmountOfSteps = currentAmountOfSteps; //update old amount of steps 
+    // console.log("   Current Amount of steps:", currentAmountOfSteps);
+    // console.log("   OLD Amount of steps:", oldAmountOfSteps);
+
 }

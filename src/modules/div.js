@@ -12,7 +12,7 @@ class DIV{
 }
 
 export function createDiv(){
-    
+    console.log("CREATING DIV");
     var buttonText = "";
     var iDivIdText = "";
 
@@ -21,12 +21,11 @@ export function createDiv(){
 
     //DELETING INPUT FORMS
     if((currentAmountOfSteps - oldAmountOfSteps) < 0){
-        console.log("       DELETING INPUT FORMS");
+        console.log("     DELETING INPUT FORMS");
         const buttonId = document.getElementsByClassName("collapsible");
         const divId = document.getElementsByClassName("content")
         
         var x = oldAmountOfSteps;
-        console.log("x: ", x);
         for (x; (x - currentAmountOfSteps) > 0; x--){
             // console.log(x);
             var lastButtonElement = buttonId[buttonId.length - 1];
@@ -38,9 +37,8 @@ export function createDiv(){
     }
     //CREATING INPUT FORMS
     if ((oldAmountOfSteps - currentAmountOfSteps) < 0) {
-        console.log("       CREATING INPUT FORMS");
+        console.log("     CREATING INPUT FORMS");
         var y  = oldAmountOfSteps;
-        console.log("y: ", y);
         for (y; (y - currentAmountOfSteps) < 0; y++ ){
             var stepCounter = parseInt(y) + 1;
             buttonText = "Step " + stepCounter;
@@ -97,9 +95,7 @@ export function createDiv(){
     }
     //loop to add collapsible buttons
     var coll = document.getElementsByClassName("collapsible");
-    console.info(coll.length);
     var i;
-    
     for (i = 0; i < coll.length; i++) {
       coll[i].addEventListener("click", function() {
         // this.classList.toggle("active");
