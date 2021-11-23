@@ -153,18 +153,19 @@ function getData(){
         stepData.push(item(tempLength, tempWidth, tempHeight, tempAngle));
     }
     
-    if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
+    // if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
         createSteps();
-        stepsCreated = true;
-    }
+        
+        // stepsCreated = true;
+    // }
 
-    if (!railCreated && stepMesh.length > 1) {
-        createRails();
-        railCreated = true;
-    }  
-    // if (stepMesh.length > 1) {
+    // if (!railCreated && stepMesh.length > 1) {
     //     createRails();
-    // }    
+    //     railCreated = true;
+    // }  
+    if (stepMesh.length > 1) {
+        createRails();
+    }    
 
     // console.log("Update OLD amount of Steps");
     

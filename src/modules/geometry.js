@@ -66,6 +66,7 @@ export function createSteps(){
         INITVAR.scene.remove( stepMesh[i] );
     }
 
+    stepMesh.length = currentAmountOfSteps;
     for (stepMeshCounter = 0; stepMeshCounter < currentAmountOfSteps; stepMeshCounter++){
         stepMesh[stepMeshCounter] = new THREE.Mesh( boxGeometry, material );
 
@@ -100,8 +101,8 @@ export function createSteps(){
 export function createRails(){
     // console.log("CREATING RAILS")
     //rail
-    // INITVAR.scene.remove( staircase.rail);
-
+    
+    INITVAR.scene.remove( staircase.rail);
     staircase.rail = new THREE.Mesh (boxGeometry, material);
     console.log("CREATING RAILS");
     // Math.sqrt((stepMesh[stepMesh.length -1].position.y * stepMesh[stepMesh.length -1].position.y) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z))
@@ -113,19 +114,22 @@ export function createRails(){
     staircase.rail.scale.x = 91 / 100; //rail width
     staircase.rail.scale.y = 110 / 100; //rail heigth
     var railLength = Math.sqrt(((stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100)) * (stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100))) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z));
-    staircase.rail.scale.z = -railLength;
+    // var railLength = Math.sqrt(((stepMesh[stepMesh.length -1].position.y + ((stepData[0].height / 100) + (30 / 100)) ) * (stepMesh[stepMesh.length -1].position.y) - ((stepData[0].height / 100) + (30 / 100)) ) + ((stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100)) * (stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100))));
+    staircase.rail.scale.z = -(railLength);
     console.log("railLength: ", railLength);
     
-    var railAngle = Math.acos(22 / 27.5);   //Math.acos(stepMesh[stepMesh.length -1].position.z / railLength)
+    var railAngle = Math.acos((stepMesh[stepMesh.length -1].position.z) / railLength)
+    // var railAngle = Math.acos((stepMesh[stepMesh.length -1].position.z + ((stepData[0].length / 100) + (30 / 100))) / railLength)
     console.log("railAngle: ", railAngle); //(90 - (Math.asin(stepMesh[stepMesh.length -1].position.z / railLength))) * Math.PI / 180
-    staircase.rail.rotation.x = -railAngle; //angle * PI / 180
+    staircase.rail.rotation.x = -railAngle; //angle * PI / 180 for degrees, but its already in radians.
     staircase.rail.rotation.y;
     staircase.rail.rotation.z;
 
     // staircase.rail.updateMatrix();
     // staircase.rail.matrixAutoUpdate = false;
-
+    
     INITVAR.scene.add( staircase.rail);
-    console.log("   ");
+    
+    console.log("END OF RAILCONFIG, STEPMESHLENGTH   ", stepMesh.length);
 }
 
