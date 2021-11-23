@@ -55,7 +55,7 @@ render();
 function render() {
     // console.log("Render");
     
-	if ( boundsViz ) boundsViz.update();
+	// if ( boundsViz ) boundsViz.update();
     INITVAR.controls.update();
 	INITVAR.renderer.render( INITVAR.scene, INITVAR.camera );
 
@@ -69,40 +69,40 @@ function render() {
 	// shape.rotation.copy( params.rotation );
 	// shape.scale.copy( params.scale );
 
-	const transformMatrix =
-		new THREE.Matrix4()
-		    .copy( GEOVAR.targetMesh.matrixWorld ).invert()
-			.multiply( shape.matrixWorld );
+	// const transformMatrix =
+	// 	new THREE.Matrix4()
+	// 	    .copy( GEOVAR.targetMesh.matrixWorld ).invert()
+	// 		.multiply( shape.matrixWorld );
 
-	if ( s === 'sphere' ) {
-		const sphere = new THREE.Sphere( undefined, 1 );
-		sphere.applyMatrix4( transformMatrix );
+	// if ( s === 'sphere' ) {
+	// 	const sphere = new THREE.Sphere( undefined, 1 );
+	// 	sphere.applyMatrix4( transformMatrix );
 
-		const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsSphere( sphere );
-		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
-		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
+	// 	const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsSphere( sphere );
+	// 	shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
+	// 	shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
 
-	}
+	// }
 
-    if ( s === 'step' ) {
-		const box = new THREE.Box3();
-		box.min.set( - 0.5, - 0.5, - 0.5 );
-		box.max.set( 0.5, 0.5, 0.5 );
+    // if ( s === 'step' ) {
+	// 	const box = new THREE.Box3();
+	// 	box.min.set( - 0.5, - 0.5, - 0.5 );
+	// 	box.max.set( 0.5, 0.5, 0.5 );
 
-		const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
-		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
-		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
-	}
+	// 	const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
+	// 	shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
+	// 	shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
+	// }
 
-    if ( s === 'rail' ) {
-		const box = new THREE.Box3();
-		box.min.set( - 0.5, - 0.5, - 0.5 );
-		box.max.set( 0.5, 0.5, 0.5 );
+    // if ( s === 'rail' ) {
+	// 	const box = new THREE.Box3();
+	// 	box.min.set( - 0.5, - 0.5, - 0.5 );
+	// 	box.max.set( 0.5, 0.5, 0.5 );
 
-		const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
-		shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
-		shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
-	}
+	// 	const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsBox( shape.geometry, transformMatrix );
+	// 	shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
+	// 	shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
+	// }
 
 	if ( INITVAR.transformControls.object !== shape ) { 
         INITVAR.transformControls.attach( shape ); 
@@ -153,19 +153,19 @@ function getData(){
         stepData.push(item(tempLength, tempWidth, tempHeight, tempAngle));
     }
     
-    // if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
+    if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
         createSteps();
-        
-        // stepsCreated = true;
-    // }
+        stepsCreated = true;
+    }
 
-    // if (!railCreated && stepMesh.length > 1) {
-    //     createRails();
-    //     railCreated = true;
-    // }  
-    if (stepMesh.length > 1) {
+    if (!railCreated && stepMesh.length > 1) {
         createRails();
-    }    
+        railCreated = true;
+    }  
+
+    // if (stepMesh.length > 1) {
+    //     createRails();
+    // }    
 
     // console.log("Update OLD amount of Steps");
     

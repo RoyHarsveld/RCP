@@ -102,8 +102,9 @@ export function createRails(){
     // console.log("CREATING RAILS")
     //rail
     
-    INITVAR.scene.remove( staircase.rail);
-    staircase.rail = new THREE.Mesh (boxGeometry, material);
+    // INITVAR.scene.remove( staircase.rail);
+
+    // staircase.rail = new THREE.Mesh (boxGeometry, material);
     console.log("CREATING RAILS");
     // Math.sqrt((stepMesh[stepMesh.length -1].position.y * stepMesh[stepMesh.length -1].position.y) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z))
 
@@ -125,11 +126,12 @@ export function createRails(){
     staircase.rail.rotation.y;
     staircase.rail.rotation.z;
 
-    // staircase.rail.updateMatrix();
+    staircase.rail.updateMatrix();
     // staircase.rail.matrixAutoUpdate = false;
     
-    INITVAR.scene.add( staircase.rail);
-    
+    // INITVAR.scene.add( staircase.rail);
+    // INITVAR.scene.add( staircase.rail);
+
     console.log("END OF RAILCONFIG, STEPMESHLENGTH   ", stepMesh.length);
 }
 
