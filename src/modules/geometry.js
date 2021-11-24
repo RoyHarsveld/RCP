@@ -4,8 +4,7 @@ import { steps } from '/src/index.js';
 import { stepData } from '../index.js';
 import { staircase } from '/src/index.js';
 import { oldAmountOfSteps, currentAmountOfSteps, amountOfSteps } from '../index.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 var  stepMeshCounter = 0, railcounter = 0;
 export var stepMesh = [], boxGeometry, railMaterial, stepMaterial, targetMesh, rollOverMesh, raycaster, pointer, loader;
@@ -22,8 +21,8 @@ class GEOMETRY{
 
     loader(){
         const objLoader = new OBJLoader();
-        objLoader.load('', (root) => {
-          scene.add(root);
+        objLoader.load('models/rail.obj', ( rail ) => {
+            INITVAR.scene.add( rail );
         });
     }
 
