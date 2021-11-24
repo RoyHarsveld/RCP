@@ -34,14 +34,18 @@ class INITTHREE{
 
     light(){
         const dirLight1 = new THREE.DirectionalLight( 0xb5b1b1, 0.8 );
-        dirLight1.position.set( 100, 100, 100 );
+        dirLight1.position.set(0 , 50,  -10);
         scene.add( dirLight1 );
     
-        const dirLight2 = new THREE.DirectionalLight( 0xa3a9d1 );
-        dirLight2.position.set( -100, 100, -100 );
+        const dirLight2 = new THREE.DirectionalLight( 0xa3a9d1, 0.5 );
+        dirLight2.position.set( -50, 0, 0 );
         scene.add( dirLight2 );
+
+        const dirLight3 = new THREE.DirectionalLight( 0xa3a9d1, 0.5 );
+        dirLight3.position.set( 50, 0, 0 );
+        scene.add( dirLight3 );
     
-        const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
+        const ambientLight = new THREE.AmbientLight( 0xffffff, 1 );
         scene.add( ambientLight );    
     }
 
@@ -77,7 +81,7 @@ class INITTHREE{
         // gui.add( params, 'speed' ).min( 0 ).max( 10 );
         gui.add( params, 'visualizeBounds' ).onChange( () => updateFromOptions() );
         gui.add( params, 'visualBoundsDepth' ).min( 1 ).max( 40 ).step( 1 ).onChange( () => updateFromOptions() );
-        gui.add( params, 'shape', [ 'rail', 'sphere', 'step' ] );
+        gui.add( params, 'shape', [ 'step', 'rail' ] );
         gui.add( transformControls, 'mode', [ 'translate', 'rotate' ] );
     
         const posFolder = gui.addFolder( 'Position' );

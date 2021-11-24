@@ -74,16 +74,6 @@ function render() {
 	// 	    .copy( GEOVAR.targetMesh.matrixWorld ).invert()
 	// 		.multiply( shape.matrixWorld );
 
-	// if ( s === 'sphere' ) {
-	// 	const sphere = new THREE.Sphere( undefined, 1 );
-	// 	sphere.applyMatrix4( transformMatrix );
-
-	// 	const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsSphere( sphere );
-	// 	shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
-	// 	shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
-
-	// }
-
     // if ( s === 'step' ) {
 	// 	const box = new THREE.Box3();
 	// 	box.min.set( - 0.5, - 0.5, - 0.5 );

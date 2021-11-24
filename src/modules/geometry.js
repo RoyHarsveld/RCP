@@ -4,17 +4,27 @@ import { steps } from '/src/index.js';
 import { stepData } from '../index.js';
 import { staircase } from '/src/index.js';
 import { oldAmountOfSteps, currentAmountOfSteps, amountOfSteps } from '../index.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+
 
 var  stepMeshCounter = 0, railcounter = 0;
-export var stepMesh = [], boxGeometry, material, targetMesh, rollOverMesh, raycaster, pointer;
+export var stepMesh = [], boxGeometry, railMaterial, stepMaterial, targetMesh, rollOverMesh, raycaster, pointer, loader;
 
 class GEOMETRY{
     constructor(){
+        this.loader()
         this.geometry()
         this.material()
         this.mesh()
         this.rollOver()
         this.raycaster()
+    }
+
+    loader(){
+        const objLoader = new OBJLoader();
+        objLoader.load('', (root) => {
+          scene.add(root);
+        });
     }
 
     geometry(){
@@ -23,24 +33,33 @@ class GEOMETRY{
     }
 
     material(){
-        material = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+        railMaterial = new THREE.MeshStandardMaterial( { 
+            color: 0xffffff,
+            emissive: 0x4c4c4c,
+            roughness: 0.6, // between 0 and 1
+            metalness: 0.8,   // between 0 and 1
+        } );
+
+        stepMaterial = new THREE.MeshLambertMaterial( { 
+            // map: loader.load('https://images.pexels.com/photos/301378/pexels-photo-301378.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'),
+            color: 0x734624, 
+        } );
+
+
     }
 
     mesh(){
         //targetmesh
-        targetMesh = new THREE.Mesh( boxGeometry, material );   //merge geometry and material into mesh
+        targetMesh = new THREE.Mesh( boxGeometry, stepMaterial );   //merge geometry and material into mesh
         targetMesh.geometry.computeBoundsTree();
         INITVAR.scene.add( targetMesh );
 
-        //sphere
-        staircase.sphere = new THREE.Mesh( new THREE.SphereBufferGeometry( 1, 50, 50 ), material );
-        INITVAR.scene.add( staircase.sphere );
         //step
-        staircase.step = new THREE.Mesh( boxGeometry, material );
+        staircase.step = new THREE.Mesh( boxGeometry, stepMaterial );
         staircase.step.geometry.computeBoundsTree();
         INITVAR.scene.add( staircase.step ); 
 
-        staircase.rail = new THREE.Mesh (boxGeometry, material);
+        staircase.rail = new THREE.Mesh (boxGeometry, railMaterial);
         staircase.rail.geometry.computeBoundsTree();
         INITVAR.scene.add( staircase.rail );
     }
@@ -68,7 +87,7 @@ export function createSteps(){
 
     stepMesh.length = currentAmountOfSteps;
     for (stepMeshCounter = 0; stepMeshCounter < currentAmountOfSteps; stepMeshCounter++){
-        stepMesh[stepMeshCounter] = new THREE.Mesh( boxGeometry, material );
+        stepMesh[stepMeshCounter] = new THREE.Mesh( boxGeometry, stepMaterial );
 
         //set scale  x(width), y(height), z(length)
         stepMesh[stepMeshCounter].scale.x = stepData[stepMeshCounter].width / 100;
@@ -99,11 +118,8 @@ export function createSteps(){
 }
 
 export function createRails(){
-    // console.log("CREATING RAILS")
-    //rail
-    
+    // console.log("CREATING RAILS");
     // INITVAR.scene.remove( staircase.rail);
-
     // staircase.rail = new THREE.Mesh (boxGeometry, material);
     console.log("CREATING RAILS");
     // Math.sqrt((stepMesh[stepMesh.length -1].position.y * stepMesh[stepMesh.length -1].position.y) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z))
@@ -114,12 +130,14 @@ export function createRails(){
 
     staircase.rail.scale.x = 91 / 100; //rail width
     staircase.rail.scale.y = 110 / 100; //rail heigth
-    var railLength = Math.sqrt(((stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100)) * (stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100))) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z));
+
+    var railLength = calcRailLength();
+    console.log("railLength: ", railLength);
+    // var railLength = Math.sqrt(((stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100)) * (stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100))) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z));
     // var railLength = Math.sqrt(((stepMesh[stepMesh.length -1].position.y + ((stepData[0].height / 100) + (30 / 100)) ) * (stepMesh[stepMesh.length -1].position.y) - ((stepData[0].height / 100) + (30 / 100)) ) + ((stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100)) * (stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100))));
     staircase.rail.scale.z = -(railLength);
-    console.log("railLength: ", railLength);
     
-    var railAngle = Math.acos((stepMesh[stepMesh.length -1].position.z) / railLength)
+    var railAngle = calcRailAngle(railLength);
     // var railAngle = Math.acos((stepMesh[stepMesh.length -1].position.z + ((stepData[0].length / 100) + (30 / 100))) / railLength)
     console.log("railAngle: ", railAngle); //(90 - (Math.asin(stepMesh[stepMesh.length -1].position.z / railLength))) * Math.PI / 180
     staircase.rail.rotation.x = -railAngle; //angle * PI / 180 for degrees, but its already in radians.
@@ -132,6 +150,15 @@ export function createRails(){
     // INITVAR.scene.add( staircase.rail);
     // INITVAR.scene.add( staircase.rail);
 
-    console.log("END OF RAILCONFIG, STEPMESHLENGTH   ", stepMesh.length);
+    console.log("END OF RAILCONFIG, STEPMESHLENGTH", stepMesh.length);
+}
+
+function calcRailLength(){
+    // return Math.sqrt(((stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100)) * (stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100))) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z));
+    return Math.sqrt(((stepMesh[stepMesh.length -1].position.y ) * (stepMesh[stepMesh.length -1].position.y )) + ((stepMesh[stepMesh.length -1].position.z + stepData[0].length / 100) * (stepMesh[stepMesh.length -1].position.z + stepData[0].length / 100)));
+}
+
+function calcRailAngle(railLength){
+    return Math.acos((stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100) ) / railLength);
 }
 
