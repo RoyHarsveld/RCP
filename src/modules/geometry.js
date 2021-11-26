@@ -16,7 +16,6 @@ class GEOMETRY{
         this.material()
         this.mesh()
         this.rollOver()
-        this.raycaster()
     }
 
     loader(){
@@ -75,11 +74,6 @@ class GEOMETRY{
         const rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
         rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
         // INITVAR._scene.add( _rollOverMesh );    
-    }
-
-    raycaster(){
-        raycaster = new THREE.Raycaster();
-		pointer = new THREE.Vector2();
     }
 }
 export default GEOMETRY;

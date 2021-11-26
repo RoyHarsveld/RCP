@@ -11,7 +11,8 @@ html {
     font-family: Arial;
     font-size: 1.2em;
     /* (#f08D00) voor oranje, (#5dbaea) voor blauw  */
-    background: #222224;   
+    /* background: #222224;    */
+    background: #313133;   
     /* background: #f08D00;    */
     align-items: stretch;
     width: 100vw;
@@ -22,12 +23,13 @@ html {
     padding: 0.5em;
     color: rgb(212, 212, 212);
     flex-shrink: 0.01;
-    outline: silver solid medium; 
+    /* outline: silver solid medium;  */
   }
   #threeCanvas { 
     width: 100%;
     height: 100%;
     /* background: #444; */
+    outline: #a0a0a0 solid thin; 
   }
 
   .collapsible {
@@ -55,7 +57,7 @@ html {
     padding: 0.3em;
     display: none;
     overflow: hidden;
-    background-color: #222224;
+    background-color: #313133;
     margin-bottom: 0.8em;
   }
 

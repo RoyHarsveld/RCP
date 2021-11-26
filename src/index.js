@@ -1,25 +1,14 @@
 import "./styles.css";
 import * as THREE from 'three';
-
 import INITTHREE from './modules/initThree.js';
 import * as INITVAR from './modules/initThree.js';
-
 import GEOMETRY from './modules/geometry.js';
 import * as GEOVAR from './modules/geometry.js';
 import { createSteps } from "./modules/geometry.js";
 import { createRails } from "./modules/geometry.js";
-
-import { stepMesh, boxGeometry, material, targetMesh } from "./modules/geometry.js";
-
+import { stepMesh } from "./modules/geometry.js";
 import { createDiv } from "./modules/div";
-
-// import guitest from './modules/gui.js';
-// import initThree from "./modules/initThree.js";
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast, MeshBVHVisualizer } from 'three-mesh-bvh';
-import { Object3D } from "three";
-// import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-// import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 
 /*three-mesh-bvh setup*/
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -41,8 +30,9 @@ const Struct = (...keys) => ((...v) => keys.reduce((o, k, i) => {o[k] = v[i]; re
 const item = Struct("length","width","height","angle");
 
 var stepsCreated, railCreated;
+var INTERSECTED;
+const color = new THREE.Color();
 
-var boundsViz;
 export var stepData = [];
 export var currentAmountOfSteps = 0, oldAmountOfSteps = 0, amountOfSteps;
 export var staircase = {};
@@ -54,53 +44,56 @@ const geometry = new GEOMETRY();
 render(); 
 function render() {
     // console.log("Render");
-    
-	// if ( boundsViz ) boundsViz.update();
-    INITVAR.controls.update();
+    INITVAR.orbitControl.update();
 	INITVAR.renderer.render( INITVAR.scene, INITVAR.camera );
-
-	// casts
-	// for ( const shape in staircase ) staircase[ shape ].visible = false; //set all shapes invisible
 
 	const s = params.shape;
 	const shape = staircase[ s ];
 	shape.visible = true;
-	// shape.position.copy( params.position );
-	// shape.rotation.copy( params.rotation );
-	// shape.scale.copy( params.scale );
 
-	// const transformMatrix =
-	// 	new THREE.Matrix4()
-	// 	    .copy( GEOVAR.targetMesh.matrixWorld ).invert()
-	// 		.multiply( shape.matrixWorld );
-
-    // if ( s === 'step' ) {
-	// 	const box = new THREE.Box3();
-	// 	box.min.set( - 0.5, - 0.5, - 0.5 );
-	// 	box.max.set( 0.5, 0.5, 0.5 );
-
-	// 	const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsBox( box, transformMatrix );
-	// 	shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
-	// 	shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
-	// }
-
-    // if ( s === 'rail' ) {
-	// 	const box = new THREE.Box3();
-	// 	box.min.set( - 0.5, - 0.5, - 0.5 );
-	// 	box.max.set( 0.5, 0.5, 0.5 );
-
-	// 	const hit = GEOVAR.targetMesh.geometry.boundsTree.intersectsBox( shape.geometry, transformMatrix );
-	// 	shape.material.color.set( hit ? 0xE91E63 : 0x666666 );
-	// 	shape.material.emissive.set( 0xE91E63 ).multiplyScalar( hit ? 0.25 : 0 );
-	// }
-
-	if ( INITVAR.transformControls.object !== shape ) { 
-        INITVAR.transformControls.attach( shape ); 
-    }
+	// if ( INITVAR.transformControls.object !== shape ) { 
+    //     INITVAR.transformControls.attach( shape ); 
+    // }
 
     getData();
-	requestAnimationFrame( render );
 
+    INITVAR.raycaster.setFromCamera( INITVAR.pointer, INITVAR.camera );
+    
+    const intersects = INITVAR.raycaster.intersectObjects( INITVAR.scene.children, false );
+
+    if ( intersects.length > 0 ) {
+        if ( INTERSECTED != intersects[ 0 ].GEOVAR.targetMesh) {
+            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+            INTERSECTED = intersects[ 0 ].object;
+            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+            INTERSECTED.material.emissive.setHex( 0xff0000 );
+        }
+
+    } else {
+        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+        INTERSECTED = null;
+    }
+    
+    console.log("COLLISION")
+    if ( INITVAR.transformControls.object !== shape ) { 
+        INITVAR.transformControls.attach( shape ); 
+    }
+        // GEOVAR.targetMesh.setColorAt( instanceId, color.setHex( Math.random() * 0xffffff ) );
+        // GEOVAR.targetMesh.instanceColor.needsUpdate = true;
+
+    // const intersects = INITVAR.raycaster.intersectObjects( INITVAR.scene.children, false );
+    // if ( intersects.length > 0 ) {
+    //     if ( INTERSECTED != intersects[ 0 ].stepMesh ) {
+    //         if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+    //         INTERSECTED = intersects[ 0 ].stepMesh;
+    //         INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+    //         INTERSECTED.material.emissive.setHex( 0xff0000 );
+    //     }
+    // } else {
+    //     if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+    //     INTERSECTED = null;
+    // }
+	requestAnimationFrame( render );
 }
 
 function getData(){

@@ -6,7 +6,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { MeshBVHVisualizer } from 'three-mesh-bvh';
 import * as GEOVAR from './geometry.js';
-export var renderer, scene, camera, transformControls, controls, gui, boundsViz;
+export var renderer, scene, camera, transformControls, orbitControl, gui, raycaster, pointer, boundsViz;
 
 class INITTHREE{
     constructor(){
@@ -15,7 +15,7 @@ class INITTHREE{
         this.light()
         this.camera()
         this.transformControls()
-        this.controls()
+        this.orbitControl()
         this.tools()
         this.gui()
         this.addEventListener()
@@ -59,19 +59,21 @@ class INITTHREE{
         scene.add( transformControls );    
     }
 
-    controls(){
-        controls = new OrbitControls( camera, renderer.domElement );  //Create new controls for camera and the render canvas.
-        controls.enableDamping = true;          //Give some weight to the controls
-        controls.dampingFactor = 0.05;          //Nice value for controlweight 
-        controls.screenSpacePanning = true;    //Best controlable
-        controls.minDistance = 0;             //how far you can zoom in. Default is 0. /10
-        controls.maxDistance = 500;             //how far you can zoom out. Default is indefinite.
-        controls.maxPolarAngle = Math.PI / 2;   //How far you can orbit vertically, upper limit. Range is 0 to Math.PI radians, and default is Math.PI.    
+    orbitControl(){
+        orbitControl = new OrbitControls( camera, renderer.domElement );  //Create new controls for camera and the render canvas.
+        orbitControl.enableDamping = true;          //Give some weight to the orbitControl
+        orbitControl.dampingFactor = 0.05;          //Nice value for controlweight 
+        orbitControl.screenSpacePanning = true;    //Best controlable
+        orbitControl.minDistance = 0;             //how far you can zoom in. Default is 0. /10
+        orbitControl.maxDistance = 500;             //how far you can zoom out. Default is indefinite.
+        orbitControl.maxPolarAngle = Math.PI / 2;   //How far you can orbit vertically, upper limit. Range is 0 to Math.PI radians, and default is Math.PI.    
     }
 
     tools(){
         const gridHelper = new THREE.GridHelper(100, 100);
         const axesHelper = new THREE.AxesHelper(50);
+        raycaster = new THREE.Raycaster();
+		pointer = new THREE.Vector2();
         scene.add (gridHelper, axesHelper);
     }
 
@@ -106,6 +108,7 @@ class INITTHREE{
     }
 
     addEventListener(){
+
         transformControls.addEventListener( 'change', function () {
             params.position.copy( staircase[ params.shape ].position );
             params.rotation.copy( staircase[ params.shape ].rotation );
@@ -114,18 +117,18 @@ class INITTHREE{
         } );
 
         transformControls.addEventListener( 'mouseDown', function () {
-            controls.enabled = false;
+            orbitControl.enabled = false;
         } );
 
         transformControls.addEventListener( 'mouseUp', function () {
-            controls.enabled = true;
+            orbitControl.enabled = true;
         } );
 
-        controls.addEventListener( 'start', function () {
+        orbitControl.addEventListener( 'start', function () {
             transformControls.enabled = false;
         } );
 
-        controls.addEventListener( 'end', function () {
+        orbitControl.addEventListener( 'end', function () {
             transformControls.enabled = true;
         } );
 
@@ -140,8 +143,8 @@ class INITTHREE{
                 renderer.setSize(width, height, false);
             }}, false );
         
-        window.addEventListener( 'keydown', function ( e ) {
-            switch ( e.key ) {
+        window.addEventListener( 'keydown', function ( event ) {
+            switch ( event.key ) {
                 case 'w':
                     transformControls.mode = 'translate';
                     break;
@@ -150,6 +153,17 @@ class INITTHREE{
                     break;
             }
             gui.updateDisplay();
+        } );
+
+        document.getElementById('threeCanvas').addEventListener( 'mousemove', function ( event ) {
+            var rect = event.target.getBoundingClientRect();
+            // pointer.x = event.clientX - rect.left;
+            pointer.x = ((event.clientX - rect.left) / event.target.width) * 2 - 1;
+            // pointer.y = event.clientY - rect.top
+            pointer.y = -(event.clientY / event.target.height) * 2 + 1 ;
+            console.log( "mouse x: ", pointer.x, "mouse y: ", pointer.y);
+            
+            // console.log( "mouse y: ", pointer.y);
         } );
     }
 }
