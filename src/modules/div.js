@@ -62,7 +62,7 @@ export function createDiv(){
             // Now create input forms and append to iDiv
             var inputLength = document.createElement('input');
             inputLength.value = 200;
-            inputLength.type = 'text';
+            inputLength.type = 'number';
             inputLength.className = 'form-control';
             inputLength.id = 'L';
             inputLength.placeholder = 'Length'
@@ -70,7 +70,7 @@ export function createDiv(){
 
             var inputWidth = document.createElement('input');
             inputWidth.value = 1000;
-            inputWidth.type = 'text';
+            inputWidth.type = 'number';
             inputWidth.className = 'form-control';
             inputWidth.id = 'W';
             inputWidth.placeholder = 'Width'
@@ -78,7 +78,7 @@ export function createDiv(){
 
             var inputHeigth = document.createElement('input');
             inputHeigth.value = 150;
-            inputHeigth.type = 'text';
+            inputHeigth.type = 'number';
             inputHeigth.className = 'form-control';
             inputHeigth.id = 'H';
             inputHeigth.placeholder = 'Height'
@@ -86,7 +86,7 @@ export function createDiv(){
 
             var inputAngle = document.createElement('input');
             inputAngle.value = 90;
-            inputAngle.type = 'text';
+            inputAngle.type = 'number';
             inputAngle.className = 'form-control';
             inputAngle.id = 'A';
             inputAngle.placeholder = 'Angle'

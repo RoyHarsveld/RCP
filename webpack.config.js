@@ -13,14 +13,21 @@ const config = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: 'RC.js',
-  },
+  },  
   devServer: {
-    open: true,
-    host: "localhost",
     static: {
       directory: path.join(__dirname, 'dist'),
     },
+    port: 9000,
   },
+
+  // devServer: {
+  //   open: true,
+  //   host: "localhost",
+  //   static: {
+  //     directory: path.join(__dirname, 'dist'),
+  //   },
+  // },
   plugins: [
     new HtmlWebpackPlugin({
       template: "./dist/index.html",

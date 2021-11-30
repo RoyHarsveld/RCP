@@ -1,12 +1,15 @@
 import * as THREE from 'three';
-import { params, staircase } from '/src/index.js';
+import { params, staircase, shape } from '../index.js';
 
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { MeshBVHVisualizer } from 'three-mesh-bvh';
 import * as GEOVAR from './geometry.js';
+
 export var renderer, scene, camera, transformControls, orbitControl, gui, raycaster, pointer, boundsViz;
+
+var transformControlsVisible = true;
 
 class INITTHREE{
     constructor(){
@@ -144,6 +147,7 @@ class INITTHREE{
             }}, false );
         
         window.addEventListener( 'keydown', function ( event ) {
+            
             switch ( event.key ) {
                 case 'w':
                     transformControls.mode = 'translate';
@@ -151,19 +155,24 @@ class INITTHREE{
                 case 'e':
                     transformControls.mode = 'rotate';
                     break;
+                case 't':
+                    if (transformControlsVisible){
+                        transformControls.attach( shape );
+                        transformControlsVisible = false;
+                        break; 
+                    } else {
+                        transformControls.detach( shape );
+                        transformControlsVisible = true;
+                    }
             }
             gui.updateDisplay();
         } );
 
         document.getElementById('threeCanvas').addEventListener( 'mousemove', function ( event ) {
             var rect = event.target.getBoundingClientRect();
-            // pointer.x = event.clientX - rect.left;
             pointer.x = ((event.clientX - rect.left) / event.target.width) * 2 - 1;
-            // pointer.y = event.clientY - rect.top
             pointer.y = -(event.clientY / event.target.height) * 2 + 1 ;
-            console.log( "mouse x: ", pointer.x, "mouse y: ", pointer.y);
-            
-            // console.log( "mouse y: ", pointer.y);
+            // console.log( "mouse x: ", pointer.x, "mouse y: ", pointer.y);
         } );
     }
 }

@@ -81,7 +81,7 @@ export default GEOMETRY;
 export function createSteps(){
 
     for (var i = 0; i < oldAmountOfSteps; i++){
-        console.log("DELETING MESH STEPS");
+        // console.log("DELETING MESH STEPS");
         INITVAR.scene.remove( stepMesh[i] );
     }
 
@@ -89,17 +89,16 @@ export function createSteps(){
     for (stepMeshCounter = 0; stepMeshCounter < currentAmountOfSteps; stepMeshCounter++){
         stepMesh[stepMeshCounter] = new THREE.Mesh( boxGeometry, stepMaterial );
 
-        //set scale  x(width), y(height), z(length)
+        //set scale     x(width), y(height), z(length)
         stepMesh[stepMeshCounter].scale.x = stepData[stepMeshCounter].width / 100;
-        stepMesh[stepMeshCounter].scale.y = -0.3;
-        // stepMesh[stepMeshCounter].scale.y = 0;
+        stepMesh[stepMeshCounter].scale.y = -0.3; //dikte van de trede
         stepMesh[stepMeshCounter].scale.z = stepData[stepMeshCounter].length / 100;
 
         //set position
         stepMesh[stepMeshCounter].position.x = 0;
         if (stepMeshCounter == 0){
             stepMesh[stepMeshCounter].position.y = stepData[stepMeshCounter].height / 100;
-            stepMesh[stepMeshCounter].position.z = 0;
+            stepMesh[stepMeshCounter].position.z = stepData[stepMeshCounter].length / 100;
         } else {
             stepMesh[stepMeshCounter].position.y = stepMesh[stepMeshCounter -1].position.y + stepData[stepMeshCounter].height / 100;  
             stepMesh[stepMeshCounter].position.z = stepMesh[stepMeshCounter -1].scale.z + stepMesh[stepMeshCounter -1].position.z;
@@ -108,13 +107,10 @@ export function createSteps(){
         stepMesh[stepMeshCounter].updateMatrix();
         stepMesh[stepMeshCounter].matrixAutoUpdate = false;
 
-        // console.log(stepMesh[stepMesh.length-1].position);
         
         //add create steps
-        console.log("CREATING stepMesh STEPS!!!!");
+        // console.log("CREATING stepMesh STEPS!!!!");
         INITVAR.scene.add( stepMesh[stepMeshCounter] );
-
-
     }
 }
 
@@ -134,8 +130,11 @@ export function createRails(){
     // staircase.rail.scale.y = 110 / 100; //rail heigth
 
     var railAngle, railLength;
+    var calcRailLength = x => stepMesh[stepMesh.length -1].position.y / Math.sin(x); //function to calculate the rail length
+
     railAngle = calculateRailAngle();
-    railLength = calculateRailLength(railAngle);
+    railLength = calcRailLength(railAngle);
+    
     console.log("railLength: ", railLength);
     // var railLength = calcRailLength();
     // var railLength = Math.sqrt(((stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100)) * (stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100))) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z));
@@ -155,7 +154,7 @@ export function createRails(){
     // INITVAR.scene.add( staircase.rail);
     // INITVAR.scene.add( staircase.rail);
 
-    console.log("END OF RAILCONFIG, STEPMESHLENGTH", stepMesh.length);
+    // console.log("END OF RAILCONFIG, STEPMESHLENGTH", stepMesh.length);
 }
 
 // function calcRailLength(){
@@ -168,18 +167,44 @@ export function createRails(){
 //     return Math.sqrt(((stepMesh[stepMesh.length -1].position.y + (30 / 100)) * (stepMesh[stepMesh.length -1].position.y + (30 / 100))) + ((stepMesh[stepMesh.length -1].position.z + stepData[0].length / 100) * (stepMesh[stepMesh.length -1].position.z + stepData[0].length / 100)));
 // }
 
+// function calculateRailAngle(){
+//     //function to round down to 5. 34 becomes 30, 28 becomes 25.
+//     var roundToNearest5 = x => Math.floor(x/5)*5;
+    
+//     //calc the radians and convert it to degrees to be able to round down.
+//     var radians = Math.atan( stepMesh[stepMesh.length -1].position.y / ( stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100) ));
+//     var degrees = radians * 180 / Math.PI;
+//     console.log("railAngleDeg: ", degrees);
+//     console.log("railAngleDegRounded: ", roundToNearest5(degrees));
+    
+//     //return the radians because Math library calculates in radians.
+//     return radians = roundToNearest5(degrees) * Math.PI / 180;
+// }
+
 function calculateRailAngle(){
-    var roundToNearest5 = x => Math.round(x/5)*5;
-    var radians = Math.atan( stepMesh[stepMesh.length -1].position.y / ( stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100) ));
-    var degrees = radians * 180 / Math.PI;
+    //function to round down to 5. 34 becomes 30, 28 becomes 25.
+    var roundToNearest5 = x => Math.floor(x/5)*5;
+    var biggestRadian = 0;
+    for (var i = 0; i < stepMesh.length; i++){
+        var radians = Math.atan( stepMesh[i].position.y / ( stepMesh[i].position.z )); //for angle α
+        // var radians = Math.atan( stepMesh[i].position.y / ( stepMesh[i].position.z + (stepData[0].length / 100))); //for angle α
+        // var radians = Math.atan( ( stepMesh[i].position.z ) / stepMesh[i].position.y); //for angle β
+        if (biggestRadian < radians){
+            biggestRadian = radians;
+            console.log("stepmesh: ", i);
+        }
+        console.log("BIG RAD: ", biggestRadian);
+    }
+    var degrees = (biggestRadian * 180 / Math.PI) ;
     console.log("railAngleDeg: ", degrees);
     console.log("railAngleDegRounded: ", roundToNearest5(degrees));
-    return radians = roundToNearest5(degrees) * Math.PI / 180;
+    // return (roundToNearest5(degrees) * Math.PI / 180);    
+    return degrees * Math.PI / 180;    
 }
 
-function calculateRailLength(railAngle){
-    return stepMesh[stepMesh.length -1].position.y / Math.sin(railAngle);
-    console.log("railLength: ", radians);
-}
+// function calculateRailLength(railAngle){
+//     return stepMesh[stepMesh.length -1].position.y / Math.sin(railAngle);
+//     console.log("railLength: ", radians);
+// }
 
 

@@ -34,8 +34,10 @@ var INTERSECTED;
 const color = new THREE.Color();
 
 export var stepData = [];
+var averageStepLength, averageStepHeight;
 export var currentAmountOfSteps = 0, oldAmountOfSteps = 0, amountOfSteps;
-export var staircase = {};
+export var staircase = {}, shape;
+export var transformControlsVisible = 0;
 
 /*CALL MODULES*/
 const initThree = new INITTHREE();
@@ -48,80 +50,48 @@ function render() {
 	INITVAR.renderer.render( INITVAR.scene, INITVAR.camera );
 
 	const s = params.shape;
-	const shape = staircase[ s ];
+	shape = staircase[ s ];
 	shape.visible = true;
 
-	// if ( INITVAR.transformControls.object !== shape ) { 
-    //     INITVAR.transformControls.attach( shape ); 
+    // if (!transformControlsVisible){
+        // if ( INITVAR.transformControls.object !== shape ) { 
+        //     INITVAR.transformControls.attach( shape ); 
+        // }
     // }
-
     getData();
 
-    INITVAR.raycaster.setFromCamera( INITVAR.pointer, INITVAR.camera );
-    
-    const intersects = INITVAR.raycaster.intersectObjects( INITVAR.scene.children, false );
-
-    if ( intersects.length > 0 ) {
-        if ( INTERSECTED != intersects[ 0 ].GEOVAR.targetMesh) {
-            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-            INTERSECTED = intersects[ 0 ].object;
-            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            INTERSECTED.material.emissive.setHex( 0xff0000 );
-        }
-
-    } else {
-        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-        INTERSECTED = null;
-    }
-    
-    console.log("COLLISION")
-    if ( INITVAR.transformControls.object !== shape ) { 
-        INITVAR.transformControls.attach( shape ); 
-    }
-        // GEOVAR.targetMesh.setColorAt( instanceId, color.setHex( Math.random() * 0xffffff ) );
-        // GEOVAR.targetMesh.instanceColor.needsUpdate = true;
-
-    // const intersects = INITVAR.raycaster.intersectObjects( INITVAR.scene.children, false );
-    // if ( intersects.length > 0 ) {
-    //     if ( INTERSECTED != intersects[ 0 ].stepMesh ) {
-    //         if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-    //         INTERSECTED = intersects[ 0 ].stepMesh;
-    //         INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-    //         INTERSECTED.material.emissive.setHex( 0xff0000 );
-    //     }
-    // } else {
-    //     if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-    //     INTERSECTED = null;
-    // }
 	requestAnimationFrame( render );
 }
 
 function getData(){
     // Add button event listener for gathering the amount of steps
     const amountOfStepsButton = document.getElementById('amountOfStepsButton');
-    amountOfStepsButton.addEventListener("click", () => {
+    amountOfStepsButton.addEventListener("click", clickfunction);
+    function clickfunction(){
         amountOfSteps = document.getElementById('amountOfSteps');   //get the amount of steps
+        
         if (amountOfSteps.value > 100){
             amountOfSteps.value = 100;
         }
         currentAmountOfSteps = amountOfSteps.value;
-    });
+        amountOfStepsButton.removeEventListener("click", clickfunction);
+    }
 
     if (oldAmountOfSteps != currentAmountOfSteps && currentAmountOfSteps > 0){
         stepsCreated = false;
         railCreated = false;
         createDiv();
     }
+
     stepData = [];
+    var averageStepLength, averageStepHeight;
     for (var i = 0; i < currentAmountOfSteps; i++){
-        
         var elms = document.getElementById('step' + (i + 1)).getElementsByTagName("*");      
         var tempLength, tempWidth, tempHeight, tempAngle;
-
         for (var j = 0; j < elms.length; j++) {
 
             if (elms[j].id === "L") {
-                tempLength = elms[j].value
+                tempLength = elms[j].value    
             }
             if (elms[j].id === "W") {
                 tempWidth = elms[j].value
@@ -134,14 +104,20 @@ function getData(){
             }
         }
         stepData.push(item(tempLength, tempWidth, tempHeight, tempAngle));
+        averageStepLength += +tempLength;
+        averageStepHeight += +tempHeight;
     }
+
     
-    if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
+
+    // if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
+    if (stepData.length > 0 && stepData[0].height > 0) {
         createSteps();
         stepsCreated = true;
     }
 
-    if (!railCreated && stepMesh.length > 1) {
+    // if (!railCreated && stepMesh.length > 1) {
+    if (stepMesh.length > 1) {
         createRails();
         railCreated = true;
     }  
