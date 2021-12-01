@@ -1,5 +1,0 @@
-1. (backend) Dynamisch tonen van 1 step
-2. (frontend) Dynamisch maken van <inputs> tonen
-    (amount of steps in kunnen vullen en vervolgens een specifieke step kunnen selecteren)
-3. (backend) Dynamisch ophalen van specifieke step data
-4. Dynamisch tonen van trap delen
