@@ -84,7 +84,6 @@ function getData(){
     }
 
     stepData = [];
-    var averageStepLength, averageStepHeight;
     for (var i = 0; i < currentAmountOfSteps; i++){
         var elms = document.getElementById('step' + (i + 1)).getElementsByTagName("*");      
         var tempLength, tempWidth, tempHeight, tempAngle;
@@ -104,8 +103,6 @@ function getData(){
             }
         }
         stepData.push(item(tempLength, tempWidth, tempHeight, tempAngle));
-        averageStepLength += +tempLength;
-        averageStepHeight += +tempHeight;
     }
 
     
