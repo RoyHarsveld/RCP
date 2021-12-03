@@ -125,7 +125,7 @@ export function createRails(){
     var roundToNearest5 = x => Math.round(x/5)*5;
     var ceilToNearest5 = x => Math.ceil(x/5)*5;
 
-    var correctRadian, biggestRadian = 6.283, smallestRadian = 0, radians;
+    var correctRadian, biggestRadian = 0, smallestRadian = 6.283, radians;
     var kromming = false, bolling = false, linear = false;
 
 
@@ -145,13 +145,15 @@ export function createRails(){
         // var radians = Math.atan( ( stepMesh[i].position.z ) / stepMesh[i].position.y); //for angle β
         
         radians = Math.atan( stepData[i].height / stepData[i].length );
-        
-        if (radians < biggestRadian){
+        // 5 < 6 6=5
+        if (radians > biggestRadian){
             biggestRadian = radians;
+            console.log("Biggest Step Angle: ", biggestRadian * 180 / Math.PI, "Step: ", i);
         }
         
-        if (radians > smallestRadian){
+        if (radians < smallestRadian){
             smallestRadian = radians;
+            console.log("Smallest Step Angle: ", smallestRadian * 180 / Math.PI, "Step: ", i);
         }
 
         if (i > 0) {                                     
@@ -159,7 +161,6 @@ export function createRails(){
             //    stairsRad = Math.atan( stepMesh[stepMesh.length-1].position.y / ( stepMesh[stepMesh.length-1].position.z ) ) ;
             //    correctRadian = stairsRad;
             kromming = true;
-            bolling = false;
             linear = false;
             
             //    break;
@@ -188,10 +189,15 @@ export function createRails(){
             }
         }
         if (kromming == true){
-            correctRadian = stairsRad;
+            if (stairsRad < biggestRadian){
+                correctRadian = stairsRad;
+            } else {
+                correctRadian = biggestRadian;
+            }
             console.log("KROMMING");
+
         } else if (bolling == true){
-            correctRadian = smallestRadian;
+            correctRadian = biggestRadian;
             console.log("BOLLING"); 
         } else {
             correctRadian = radians;
@@ -202,17 +208,20 @@ export function createRails(){
     // var degrees = (stairsRadian * 180 / Math.PI) ;
     var degrees = (correctRadian * 180 / Math.PI) ;
     console.log("   railAngleDeg: ", degrees, "railAngleDegfloored: ", floorToNearest5(degrees) );
-    if (bolling = true || (degrees - floorToNearest5(degrees))  > (ceilToNearest5(degrees) - degrees)){
+
+    if ( ((degrees - floorToNearest5(degrees))  > (ceilToNearest5(degrees) - degrees))){
+        
         railAngle = (ceilToNearest5(degrees) * Math.PI / 180);
         console.log("       Selected Rail Angle rounded: ", railAngle * 180 / Math.PI);
 
         railLength = stepMesh[stepMesh.length -1].position.y / Math.sin(railAngle);
-        staircase.rail.position.y = 0.03; 
-        staircase.rail.position.z = 0;
+        staircase.rail.position.y = stepMesh[0].position.y - stepMesh[0].position.y + 0.03; 
+        staircase.rail.position.z = stepMesh[0].position.z - stepMesh[0].position.z;
         staircase.rail.scale.z = (railLength);
         staircase.rail.rotation.x = -railAngle; //angle * PI / 180 for degrees, but its already in radians.
 
     } else {
+        
         railAngle = (floorToNearest5(degrees) * Math.PI / 180);
         console.log("       Selected Rail Angle floored: ", railAngle * 180 / Math.PI);
 

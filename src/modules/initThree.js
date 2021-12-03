@@ -163,6 +163,7 @@ class INITTHREE{
                     } else {
                         transformControls.detach( shape );
                         transformControlsVisible = true;
+                        break;
                     }
             }
             gui.updateDisplay();
