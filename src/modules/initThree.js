@@ -23,6 +23,7 @@ class INITTHREE{
         this.gui()
         this.addEventListener()
     }
+    
     renderer(){
         renderer = new THREE.WebGLRenderer( { canvas:document.querySelector('canvas'), antialias: true } );    //The WebGL renderer displays the created scenes using WebGL (CONSTRUCTOR)
         renderer.setPixelRatio( window.devicePixelRatio );            //Set renderer pixelRatio

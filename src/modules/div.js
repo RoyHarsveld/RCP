@@ -53,10 +53,10 @@ export function createDiv(){
             console.log(Button);
 
             //create button content
-            var iDiv = document.createElement('div');
+            var iDiv = document.createElement('nav');
             iDiv.id = iDivIdText;
             iDiv.className = 'content';
-            iDiv.style = 'none';
+            iDiv.style = 'block';
             document.getElementById('stepInput').appendChild(iDiv);
             
             // Now create input forms and append to iDiv
@@ -94,17 +94,32 @@ export function createDiv(){
         }
     }
     //loop to add collapsible buttons
-    var coll = document.getElementsByClassName("collapsible");
+    var coll = document.getElementsByClassName("collapsible btn");
     var i;
     for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
-        // this.classList.toggle("active");
+      coll[i].removeEventListener("click", showAndHide, false)
+      coll[i].addEventListener("click", showAndHide, false)
+      
+      function showAndHide(){
+        this.classList.toggle("active");
         var content = this.nextElementSibling;
-        if (content.style.display === "block") {
-          content.style.display = "none";
-        } else {
+        if (content.style.display == "none" || content.style.display === "") { //changed to also accept the original value, which is "" instead of "none"
           content.style.display = "block";
+
+        } else {
+          content.style.display = "none";
+
         }
-      });
+      }
+
+      // function showAndHide(){
+      //   // this.classList.toggle("active");
+      //   var content = this.nextElementSibling;
+      //   if (content.style.display.emptyOrEqualTo('block')) {
+      //     content.style.display = "none";
+      //   } else {
+      //     content.style.display = "block";
+      //   }
+      // }
     }
 }

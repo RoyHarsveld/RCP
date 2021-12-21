@@ -9,6 +9,7 @@ import { createRails } from "./modules/geometry.js";
 import { stepMesh } from "./modules/geometry.js";
 import { createDiv } from "./modules/div";
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast, MeshBVHVisualizer } from 'three-mesh-bvh';
+import { jsPDF } from "jspdf";
 
 /*three-mesh-bvh setup*/
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -42,15 +43,27 @@ export var transformControlsVisible = 0;
 /*CALL MODULES*/
 const initThree = new INITTHREE();
 const geometry = new GEOMETRY();
+const PDF = new jsPDF();
 
-render(); 
+const pdfButton = document.getElementById('pdfButton');
+const amountOfStepsButton = document.getElementById('amountOfStepsButton');
+pdfButton.addEventListener("click", createPDF, false);
+amountOfStepsButton.addEventListener("click", getAmountOfSteps, false);
+
+animate();
+// render(); 
+
+/*Rendering the scene.
+ This function is a render/animatation loop*/
+function animate() {
+    requestAnimationFrame( animate );
+    render();
+}
+
 function render() {
     // console.log("Render");
-    INITVAR.orbitControl.update();
-	INITVAR.renderer.render( INITVAR.scene, INITVAR.camera );
-
-	const s = params.shape;
-	shape = staircase[ s ];
+    /*Transformcontrols, make visible*/
+	shape = staircase[ params.shape ];
 	shape.visible = true;
 
     // if (!transformControlsVisible){
@@ -58,31 +71,39 @@ function render() {
         //     INITVAR.transformControls.attach( shape ); 
         // }
     // }
-    getData();
 
-	requestAnimationFrame( render );
+    getStepData();
+
+    INITVAR.orbitControl.update();
+	INITVAR.renderer.render( INITVAR.scene, INITVAR.camera );
 }
 
-function getData(){
-    // Add button event listener for gathering the amount of steps
-    const amountOfStepsButton = document.getElementById('amountOfStepsButton');
-    amountOfStepsButton.addEventListener("click", clickfunction);
-    function clickfunction(){
+
+function createPDF(){
+    console.log("CREATING PDF BABY");
+    PDF.text("hello world poepiescheet", 40, 40);
+    // PDF.save("installDrawing.pdf");
+    window.open(PDF.output("bloburl"), '_blank');
+}
+
+
+function getAmountOfSteps(){
         amountOfSteps = document.getElementById('amountOfSteps');   //get the amount of steps
         
         if (amountOfSteps.value > 100){
             amountOfSteps.value = 100;
         }
         currentAmountOfSteps = amountOfSteps.value;
-        amountOfStepsButton.removeEventListener("click", clickfunction);
-    }
+        // amountOfStepsButton.removeEventListener("click", clickfunction);
 
     if (oldAmountOfSteps != currentAmountOfSteps && currentAmountOfSteps > 0){
         stepsCreated = false;
         railCreated = false;
         createDiv();
     }
+}
 
+function getStepData(){
     stepData = [];
     for (var i = 0; i < currentAmountOfSteps; i++){
         var elms = document.getElementById('step' + (i + 1)).getElementsByTagName("*");      
@@ -105,8 +126,6 @@ function getData(){
         stepData.push(item(tempLength, tempWidth, tempHeight, tempAngle));
     }
 
-    
-
     // if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
     if (stepData.length > 0 && stepData[0].height > 0) {
         createSteps();
@@ -128,5 +147,4 @@ function getData(){
     oldAmountOfSteps = currentAmountOfSteps; //update old amount of steps 
     // console.log("   Current Amount of steps:", currentAmountOfSteps);
     // console.log("   OLD Amount of steps:", oldAmountOfSteps);
-
 }

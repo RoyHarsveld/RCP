@@ -26,6 +26,7 @@
     "enable3d": "^0.23.0",
     "express": "^4.17.1",
     "jquery": "^3.6.0",
+    "jspdf": "^2.4.0",
     "popper.js": "^1.16.1",
     "three": "^0.133.1",
     "three-mesh-bvh": "^0.5.2"

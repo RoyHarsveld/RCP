@@ -14,10 +14,25 @@ html {
     /* background: #222224;    */
     background: #313133;   
     /* background: #f08D00;    */
-    align-items: stretch;
+    /* align-items: stretch; */
     width: 100vw;
     height: 100vh;
-    
+  }
+
+  .form-control {
+    margin-right: 0.2em;
+}
+
+  .stepSelect {
+    display: flex;
+    padding: 0.1em;
+    justify-content: flex-end;
+
+  }
+  .genPDF {
+    display: flex;
+    padding: 0.1em;
+    justify-content: flex-end;
   }
   #editor {
     padding: 0.5em;
