@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 import * as INITVAR from './initThree.js';
-import { steps } from '/src/index.js';
-import { stepData } from '../index.js';
+// import { steps } from '/src/index.js';
+// import { stepData } from '../index.js';
 import { staircase } from '/src/index.js';
 import { oldAmountOfSteps, currentAmountOfSteps, amountOfSteps } from '../index.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
-var  stepMeshCounter = 0, railcounter = 0;
-export var stepMesh = [], boxGeometry, railMaterial, stepMaterial, targetMesh, rollOverMesh, raycaster, pointer;
+var  stepCounter = 0, railcounter = 0;
+export var boxGeometry, railMaterial, stepMaterial, targetMesh, rollOverMesh, raycaster, pointer;
 
 class GEOMETRY{
     constructor(){
@@ -78,49 +78,49 @@ class GEOMETRY{
 }
 export default GEOMETRY;
 
-export function createSteps(){
+export function createSteps(stepData){
 
     for (var i = 0; i < oldAmountOfSteps; i++){
         // console.log("DELETING MESH STEPS");
-        INITVAR.scene.remove( stepMesh[i] );
+        INITVAR.scene.remove( staircase.step[i] );
     }
 
-    stepMesh.length = currentAmountOfSteps;
-    for (stepMeshCounter = 0; stepMeshCounter < currentAmountOfSteps; stepMeshCounter++){
-        stepMesh[stepMeshCounter] = new THREE.Mesh( boxGeometry, stepMaterial );
+    staircase.step.length = currentAmountOfSteps;
+    for (stepCounter = 0; stepCounter < currentAmountOfSteps; stepCounter++){
+        staircase.step[stepCounter] = new THREE.Mesh( boxGeometry, stepMaterial );
 
         //set scale     x(width), y(height), z(length)
-        stepMesh[stepMeshCounter].scale.x = stepData[stepMeshCounter].width / 100;
-        stepMesh[stepMeshCounter].scale.y = -0.3; //dikte van de trede
-        stepMesh[stepMeshCounter].scale.z = stepData[stepMeshCounter].length / 100;
+        staircase.step[stepCounter].scale.x = stepData[stepCounter].width / 100;
+        staircase.step[stepCounter].scale.y = -0.3; //dikte van de trede
+        staircase.step[stepCounter].scale.z = stepData[stepCounter].length / 100;
 
         //set position
-        stepMesh[stepMeshCounter].position.x = 0;
-        if (stepMeshCounter == 0){
-            stepMesh[stepMeshCounter].position.y = stepData[stepMeshCounter].height / 100;
-            stepMesh[stepMeshCounter].position.z = stepData[stepMeshCounter].length / 100;
+        staircase.step[stepCounter].position.x = 0;
+        if (stepCounter == 0){
+            staircase.step[stepCounter].position.y = stepData[stepCounter].height / 100;
+            staircase.step[stepCounter].position.z = stepData[stepCounter].length / 100;
         } else {
-            stepMesh[stepMeshCounter].position.y = stepMesh[stepMeshCounter -1].position.y + stepData[stepMeshCounter].height / 100;  
-            stepMesh[stepMeshCounter].position.z = stepMesh[stepMeshCounter -1].scale.z + stepMesh[stepMeshCounter -1].position.z;
+            staircase.step[stepCounter].position.y = staircase.step[stepCounter -1].position.y + stepData[stepCounter].height / 100;  
+            staircase.step[stepCounter].position.z = staircase.step[stepCounter -1].scale.z + staircase.step[stepCounter -1].position.z;
         }
 
-        stepMesh[stepMeshCounter].updateMatrix();
-        stepMesh[stepMeshCounter].matrixAutoUpdate = false;
+        staircase.step[stepCounter].updateMatrix();
+        staircase.step[stepCounter].matrixAutoUpdate = false;
 
         
         //add create steps
-        // console.log("CREATING stepMesh STEPS!!!!");
-        INITVAR.scene.add( stepMesh[stepMeshCounter] );
+        // console.log("CREATING staircase.step STEPS!!!!");
+        INITVAR.scene.add( staircase.step[stepCounter] );
     }
 }
 
-export function createRails(){
+export function createRails(stepData){
     // console.log("CREATING RAILS");
 
     /*CALCULATE RAIL ANGLE*/
     var railAngle, railLength;
 
-    var calcRailLength = x => stepMesh[stepMesh.length -1].position.y / Math.sin(x); //function to calculate the rail length
+    var calcRailLength = x => staircase.step[staircase.step.length -1].position.y / Math.sin(x); //function to calculate the rail length
     var floorToNearest5 = x => Math.floor(x/5)*5;
     var roundToNearest5 = x => Math.round(x/5)*5;
     var ceilToNearest5 = x => Math.ceil(x/5)*5;
@@ -129,20 +129,20 @@ export function createRails(){
     var kromming = false, bolling = false, linear = false;
 
 
-    var stairsDegr = ( Math.atan( stepMesh[stepMesh.length-1].position.y / ( stepMesh[stepMesh.length-1].position.z ) ) ) * 180 / Math.PI ; //for angle α
-    var stairsRad =  Math.atan( stepMesh[stepMesh.length-1].position.y / ( stepMesh[stepMesh.length-1].position.z ) ) ; //for angle α
+    var stairsDegr = ( Math.atan( staircase.step[staircase.step.length-1].position.y / ( staircase.step[staircase.step.length-1].position.z ) ) ) * 180 / Math.PI ; //for angle α
+    var stairsRad =  Math.atan( staircase.step[staircase.step.length-1].position.y / ( staircase.step[staircase.step.length-1].position.z ) ) ; //for angle α
     console.log(" ");
     console.log("TotalStairsDegree: ", stairsDegr);
 
-    var averageStepLength = ( stepMesh[stepMesh.length-1].position.z / currentAmountOfSteps * 100 ) ;
+    var averageStepLength = ( staircase.step[staircase.step.length-1].position.z / currentAmountOfSteps * 100 ) ;
     // console.log("averageStepLength", averageStepLength);
-    // console.log("stepMesh[stepMesh.length-1].position.z", stepMesh[stepMesh.length-1].position.z);
+    // console.log("staircase.step[staircase.step.length-1].position.z", staircase.step[staircase.step.length-1].position.z);
     // console.log("amountOfSteps", currentAmountOfSteps);
 
-    for (var i = 0; i < stepMesh.length; i++){
+    for (var i = 0; i < staircase.step.length; i++){
 
         // var radians = Math.atan( stepData[i].height / stepData[i].length ); //for angle α
-        // var radians = Math.atan( ( stepMesh[i].position.z ) / stepMesh[i].position.y); //for angle β
+        // var radians = Math.atan( ( staircase.step[i].position.z ) / staircase.step[i].position.y); //for angle β
         
         radians = Math.atan( stepData[i].height / stepData[i].length );
         // 5 < 6 6=5
@@ -158,11 +158,10 @@ export function createRails(){
 
         if (i > 0) {                                     
             if (stepData[i].length < stepData[i-1].length){         //hol, pak de trap angle: stairsrad
-            //    stairsRad = Math.atan( stepMesh[stepMesh.length-1].position.y / ( stepMesh[stepMesh.length-1].position.z ) ) ;
+            //    stairsRad = Math.atan( staircase.step[staircase.step.length-1].position.y / ( staircase.step[staircase.step.length-1].position.z ) ) ;
             //    correctRadian = stairsRad;
             kromming = true;
             linear = false;
-            
             //    break;
             }
 
@@ -214,9 +213,9 @@ export function createRails(){
         railAngle = (ceilToNearest5(degrees) * Math.PI / 180);
         console.log("       Selected Rail Angle rounded: ", railAngle * 180 / Math.PI);
 
-        railLength = stepMesh[stepMesh.length -1].position.y / Math.sin(railAngle);
-        staircase.rail.position.y = stepMesh[0].position.y - stepMesh[0].position.y + 0.03; 
-        staircase.rail.position.z = stepMesh[0].position.z - stepMesh[0].position.z;
+        railLength = staircase.step[staircase.step.length -1].position.y / Math.sin(railAngle);
+        staircase.rail.position.y = staircase.step[0].position.y - staircase.step[0].position.y + 0.03; 
+        staircase.rail.position.z = staircase.step[0].position.z - staircase.step[0].position.z;
         staircase.rail.scale.z = (railLength);
         staircase.rail.rotation.x = -railAngle; //angle * PI / 180 for degrees, but its already in radians.
 
@@ -225,26 +224,26 @@ export function createRails(){
         railAngle = (floorToNearest5(degrees) * Math.PI / 180);
         console.log("       Selected Rail Angle floored: ", railAngle * 180 / Math.PI);
 
-        railLength = stepMesh[stepMesh.length -1].position.y / Math.sin(railAngle);
-        staircase.rail.position.y = stepMesh[stepMesh.length -1].position.y + 0.03; 
-        staircase.rail.position.z = stepMesh[stepMesh.length -1].position.z;
+        railLength = staircase.step[staircase.step.length -1].position.y / Math.sin(railAngle);
+        staircase.rail.position.y = staircase.step[staircase.step.length -1].position.y + 0.03; 
+        staircase.rail.position.z = staircase.step[staircase.step.length -1].position.z;
         staircase.rail.scale.z = -(railLength);
         staircase.rail.rotation.x = -railAngle; //angle * PI / 180 for degrees, but its already in radians.
 
     }
 
-    railLength = stepMesh[stepMesh.length -1].position.y / Math.sin(railAngle); // voor boven naar benden
+    railLength = staircase.step[staircase.step.length -1].position.y / Math.sin(railAngle); // voor boven naar benden
 
     staircase.rail.position.x = 90/100; //from the wall
 
     // console.log("railLength: ", railLength);
     // var railLength = calcRailLength();
-    // var railLength = Math.sqrt(((stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100)) * (stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100))) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z));
-    // var railLength = Math.sqrt(((stepMesh[stepMesh.length -1].position.y + ((stepData[0].height / 100) + (30 / 100)) ) * (stepMesh[stepMesh.length -1].position.y) - ((stepData[0].height / 100) + (30 / 100)) ) + ((stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100)) * (stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100))));
+    // var railLength = Math.sqrt(((staircase.step[staircase.step.length -1].position.y - (stepData[0].height / 100)) * (staircase.step[staircase.step.length -1].position.y - (stepData[0].height / 100))) + (staircase.step[staircase.step.length -1].position.z * staircase.step[staircase.step.length -1].position.z));
+    // var railLength = Math.sqrt(((staircase.step[staircase.step.length -1].position.y + ((stepData[0].height / 100) + (30 / 100)) ) * (staircase.step[staircase.step.length -1].position.y) - ((stepData[0].height / 100) + (30 / 100)) ) + ((staircase.step[staircase.step.length -1].position.z + (stepData[0].length / 100)) * (staircase.step[staircase.step.length -1].position.z + (stepData[0].length / 100))));
     // staircase.rail.scale.z = -(railLength);
     
     // var railAngle = calcRailAngle(railLength);
-    // var railAngle = Math.acos((stepMesh[stepMesh.length -1].position.z + ((stepData[0].length / 100) + (30 / 100))) / railLength)
+    // var railAngle = Math.acos((staircase.step[staircase.step.length -1].position.z + ((stepData[0].length / 100) + (30 / 100))) / railLength)
     // staircase.rail.rotation.x = -railAngle; //angle * PI / 180 for degrees, but its already in radians.
     // staircase.rail.rotation.x;
     staircase.rail.rotation.y;
@@ -257,17 +256,17 @@ export function createRails(){
     // INITVAR.scene.add( staircase.rail);
     // INITVAR.scene.add( staircase.rail);
 
-    // console.log("END OF RAILCONFIG, STEPMESHLENGTH", stepMesh.length);
+    // console.log("END OF RAILCONFIG, staircase.stepLENGTH", staircase.step.length);
 }
 
 // function calcRailLength(){
-//     console.log('a ',(stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100)), '+ b ',stepMesh[stepMesh.length -1].position.y);
-//     // return Math.sqrt( Math.pow( stepMesh[stepMesh.length -1].position.y + (30 / 100) , 2 ) + Math.pow( (stepMesh[stepMesh.length -1].position.z + stepData[0].length) / 100 , 2 ) )
-//     return Math.sqrt( Math.pow( (stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100)), 2 ) + Math.pow( stepMesh[stepMesh.length -1].position.y, 2 ))
-//     return Math.sqrt( Math.pow( (stepMesh[stepMesh.length -1].position.z + stepMesh[1].position.z), 2 ) + Math.pow( stepMesh[stepMesh.length -1].position.y, 2 ))
+//     console.log('a ',(staircase.step[staircase.step.length -1].position.z + (stepData[0].length / 100)), '+ b ',staircase.step[staircase.step.length -1].position.y);
+//     // return Math.sqrt( Math.pow( staircase.step[staircase.step.length -1].position.y + (30 / 100) , 2 ) + Math.pow( (staircase.step[staircase.step.length -1].position.z + stepData[0].length) / 100 , 2 ) )
+//     return Math.sqrt( Math.pow( (staircase.step[staircase.step.length -1].position.z + (stepData[0].length / 100)), 2 ) + Math.pow( staircase.step[staircase.step.length -1].position.y, 2 ))
+//     return Math.sqrt( Math.pow( (staircase.step[staircase.step.length -1].position.z + staircase.step[1].position.z), 2 ) + Math.pow( staircase.step[staircase.step.length -1].position.y, 2 ))
     
-//     // return Math.sqrt(((stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100)) * (stepMesh[stepMesh.length -1].position.y - (stepData[0].height / 100))) + (stepMesh[stepMesh.length -1].position.z * stepMesh[stepMesh.length -1].position.z));
-//     return Math.sqrt(((stepMesh[stepMesh.length -1].position.y + (30 / 100)) * (stepMesh[stepMesh.length -1].position.y + (30 / 100))) + ((stepMesh[stepMesh.length -1].position.z + stepData[0].length / 100) * (stepMesh[stepMesh.length -1].position.z + stepData[0].length / 100)));
+//     // return Math.sqrt(((staircase.step[staircase.step.length -1].position.y - (stepData[0].height / 100)) * (staircase.step[staircase.step.length -1].position.y - (stepData[0].height / 100))) + (staircase.step[staircase.step.length -1].position.z * staircase.step[staircase.step.length -1].position.z));
+//     return Math.sqrt(((staircase.step[staircase.step.length -1].position.y + (30 / 100)) * (staircase.step[staircase.step.length -1].position.y + (30 / 100))) + ((staircase.step[staircase.step.length -1].position.z + stepData[0].length / 100) * (staircase.step[staircase.step.length -1].position.z + stepData[0].length / 100)));
 // }
 
 // function calculateRailAngle(){
@@ -275,7 +274,7 @@ export function createRails(){
 //     var roundToNearest5 = x => Math.floor(x/5)*5;
     
 //     //calc the radians and convert it to degrees to be able to round down.
-//     var radians = Math.atan( stepMesh[stepMesh.length -1].position.y / ( stepMesh[stepMesh.length -1].position.z + (stepData[0].length / 100) ));
+//     var radians = Math.atan( staircase.step[staircase.step.length -1].position.y / ( staircase.step[staircase.step.length -1].position.z + (stepData[0].length / 100) ));
 //     var degrees = radians * 180 / Math.PI;
 //     console.log("railAngleDeg: ", degrees);
 //     console.log("railAngleDegRounded: ", roundToNearest5(degrees));
@@ -289,23 +288,23 @@ export function createRails(){
 //     var roundToNearest5 = x => Math.round(x/5)*5;
 //     var correctRadian = 7;
 
-//     var stairsDegr = ( Math.atan( stepMesh[stepMesh.length-1].position.y / ( stepMesh[stepMesh.length-1].position.z ) ) ) * 180 / Math.PI ; //for angle α
-//     var stairsRad =  Math.atan( stepMesh[stepMesh.length-1].position.y / ( stepMesh[stepMesh.length-1].position.z ) ) ; //for angle α
+//     var stairsDegr = ( Math.atan( staircase.step[staircase.step.length-1].position.y / ( staircase.step[staircase.step.length-1].position.z ) ) ) * 180 / Math.PI ; //for angle α
+//     var stairsRad =  Math.atan( staircase.step[staircase.step.length-1].position.y / ( staircase.step[staircase.step.length-1].position.z ) ) ; //for angle α
 //     console.log("TotalStairsDegree: ", stairsDegr);
 
-//     var averageStepLength = ( stepMesh[stepMesh.length-1].position.z / currentAmountOfSteps * 100 ) ;
+//     var averageStepLength = ( staircase.step[staircase.step.length-1].position.z / currentAmountOfSteps * 100 ) ;
 //     console.log("averageStepLength", averageStepLength);
-//     console.log("stepMesh[stepMesh.length-1].position.z", stepMesh[stepMesh.length-1].position.z);
+//     console.log("staircase.step[staircase.step.length-1].position.z", staircase.step[staircase.step.length-1].position.z);
 //     console.log("amountOfSteps", currentAmountOfSteps);
 
-//     for (var i = 0; i < stepMesh.length; i++){
+//     for (var i = 0; i < staircase.step.length; i++){
 
 //         // var radians = Math.atan( stepData[i].height / stepData[i].length ); //for angle α
-//         // var radians = Math.atan( ( stepMesh[i].position.z ) / stepMesh[i].position.y); //for angle β
+//         // var radians = Math.atan( ( staircase.step[i].position.z ) / staircase.step[i].position.y); //for angle β
         
 //         if (i > 0) {                                     
 //             if (stepData[i].length < stepData[i-1].length){     //kromming
-//                correctRadian = Math.atan( stepMesh[stepMesh.length-1].position.y / ( stepMesh[stepMesh.length-1].position.z ) ) ;
+//                correctRadian = Math.atan( staircase.step[staircase.step.length-1].position.y / ( staircase.step[staircase.step.length-1].position.z ) ) ;
 //                console.log("KROMMING")
 //                break;
 //             }
@@ -330,7 +329,7 @@ export function createRails(){
 // }
 
 // function calculateRailLength(railAngle){
-//     return stepMesh[stepMesh.length -1].position.y / Math.sin(railAngle);
+//     return staircase.step[staircase.step.length -1].position.y / Math.sin(railAngle);
 //     console.log("railLength: ", radians);
 // }
 

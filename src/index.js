@@ -6,7 +6,7 @@ import GEOMETRY from './modules/geometry.js';
 import * as GEOVAR from './modules/geometry.js';
 import { createSteps } from "./modules/geometry.js";
 import { createRails } from "./modules/geometry.js";
-import { stepMesh } from "./modules/geometry.js";
+// import { staircase.step } from "./modules/geometry.js";
 import { createDiv } from "./modules/div";
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast, MeshBVHVisualizer } from 'three-mesh-bvh';
 import { jsPDF } from "jspdf";
@@ -17,7 +17,6 @@ THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 
 const params = {
-    speed: 1,
     visualizeBounds: true,
     visualBoundsDepth: 10,
     shape: 'step',
@@ -30,19 +29,21 @@ const params = {
 const Struct = (...keys) => ((...v) => keys.reduce((o, k, i) => {o[k] = v[i]; return o} , {}))
 const item = Struct("length","width","height","angle");
 
-var stepsCreated, railCreated;
-var INTERSECTED;
-const color = new THREE.Color();
+var stepsCreatedFlag = false, railCreatedFlag = false;
+// export var stepData = [];
+export var currentAmountOfSteps = 0, oldAmountOfSteps = 0
 
-export var stepData = [];
-var averageStepLength, averageStepHeight;
-export var currentAmountOfSteps = 0, oldAmountOfSteps = 0, amountOfSteps;
-export var staircase = {}, shape;
+export var shape
+export var staircase = {
+
+};
+
 export var transformControlsVisible = 0;
 
-/*CALL MODULES*/
-const initThree = new INITTHREE();
-const geometry = new GEOMETRY();
+/*CALL CONSTRUCTORS*/
+// const initThree = new INITTHREE();
+new INITTHREE();
+new GEOMETRY();
 const PDF = new jsPDF();
 
 const pdfButton = document.getElementById('pdfButton');
@@ -51,7 +52,6 @@ pdfButton.addEventListener("click", createPDF, false);
 amountOfStepsButton.addEventListener("click", getAmountOfSteps, false);
 
 animate();
-// render(); 
 
 /*Rendering the scene.
  This function is a render/animatation loop*/
@@ -78,7 +78,6 @@ function render() {
 	INITVAR.renderer.render( INITVAR.scene, INITVAR.camera );
 }
 
-
 function createPDF(){
     console.log("CREATING PDF BABY");
     PDF.text("hello world poepiescheet", 40, 40);
@@ -86,9 +85,8 @@ function createPDF(){
     window.open(PDF.output("bloburl"), '_blank');
 }
 
-
 function getAmountOfSteps(){
-        amountOfSteps = document.getElementById('amountOfSteps');   //get the amount of steps
+        let amountOfSteps = document.getElementById('amountOfSteps');   //get the amount of steps
         
         if (amountOfSteps.value > 100){
             amountOfSteps.value = 100;
@@ -97,14 +95,14 @@ function getAmountOfSteps(){
         // amountOfStepsButton.removeEventListener("click", clickfunction);
 
     if (oldAmountOfSteps != currentAmountOfSteps && currentAmountOfSteps > 0){
-        stepsCreated = false;
-        railCreated = false;
+        stepsCreatedFlag = false;
+        railCreatedFlag = false;
         createDiv();
     }
 }
 
 function getStepData(){
-    stepData = [];
+    var stepData = [];
     for (var i = 0; i < currentAmountOfSteps; i++){
         var elms = document.getElementById('step' + (i + 1)).getElementsByTagName("*");      
         var tempLength, tempWidth, tempHeight, tempAngle;
@@ -126,19 +124,19 @@ function getStepData(){
         stepData.push(item(tempLength, tempWidth, tempHeight, tempAngle));
     }
 
-    // if (!stepsCreated && stepData.length > 0 && stepData[0].height > 0) {
+    // if (!stepsCreatedFlag && stepData.length > 0 && stepData[0].height > 0) {
     if (stepData.length > 0 && stepData[0].height > 0) {
-        createSteps();
-        stepsCreated = true;
+        createSteps(stepData);
+        stepsCreatedFlag = true;
     }
 
-    // if (!railCreated && stepMesh.length > 1) {
-    if (stepMesh.length > 1) {
-        createRails();
-        railCreated = true;
+    // if (!railCreatedFlag && staircase.step.length > 1) {
+    if (staircase.step.length > 1) {
+        createRails(stepData);
+        railCreatedFlag = true;
     }  
 
-    // if (stepMesh.length > 1) {
+    // if (staircase.step.length > 1) {
     //     createRails();
     // }    
 
