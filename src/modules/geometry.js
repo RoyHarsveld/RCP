@@ -3,14 +3,16 @@ import * as INITVAR from './initThree.js';
 // import { steps } from '/src/index.js';
 // import { stepData } from '../index.js';
 import { staircase } from '/src/index.js';
-import { oldAmountOfSteps, currentAmountOfSteps, amountOfSteps } from '../index.js';
+import { oldAmountOfSteps, currentAmountOfSteps} from '../index.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
-var  stepCounter = 0, railcounter = 0;
-export var boxGeometry, railMaterial, stepMaterial, targetMesh, rollOverMesh, raycaster, pointer;
+// var  stepCounter = 0, railcounter = 0;
+var boxGeometry, railMaterial, stepMaterial, targetMesh, rollOverMesh, raycaster, pointer;
 
 class GEOMETRY{
     constructor(){
+        this.boxGeometry
+
         this.loader()
         this.geometry()
         this.material()
@@ -79,7 +81,7 @@ class GEOMETRY{
 export default GEOMETRY;
 
 export function createSteps(stepData){
-
+    var stepCounter;
     for (var i = 0; i < oldAmountOfSteps; i++){
         // console.log("DELETING MESH STEPS");
         INITVAR.scene.remove( staircase.step[i] );

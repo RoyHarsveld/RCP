@@ -178,22 +178,21 @@ class INITTHREE{
         } );
     }
 }
-
 export default INITTHREE;
 
-export function updateFromOptions() {
-	// Update bounds viz
-	if ( boundsViz && ! params.visualizeBounds ) {
-		scene.remove( boundsViz );
-		boundsViz = null;
-	}
+// export function updateFromOptions() {
+// 	// Update bounds viz
+// 	if ( boundsViz && ! params.visualizeBounds ) {
+// 		scene.remove( boundsViz );
+// 		boundsViz = null;
+// 	}
 
-	if ( !boundsViz && params.visualizeBounds ) {
-		boundsViz = new MeshBVHVisualizer( GEOVAR.targetMesh );
-		scene.add( boundsViz );
-	}
+// 	if ( !boundsViz && params.visualizeBounds ) {
+// 		boundsViz = new MeshBVHVisualizer( GEOVAR.targetMesh );
+// 		scene.add( boundsViz );
+// 	}
 
-	if ( boundsViz ) {
-		boundsViz.depth = params.visualBoundsDepth;
-	}
-}
+// 	if ( boundsViz ) {
+// 		boundsViz.depth = params.visualBoundsDepth;
+// 	}
+// }
